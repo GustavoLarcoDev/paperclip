@@ -29,6 +29,7 @@ import {
 import { useNavigate, useSearchParams } from "@/lib/router";
 import { queryKeys } from "@/lib/queryKeys";
 import { copyTextToClipboard } from "@/lib/clipboard";
+import { useCopyAction } from "@/lib/use-copy-action";
 import { isAgentStatusInvokable } from "@paperclipai/shared";
 import { sanitizedSetupErrorMessage } from "./chat-setup-error";
 import {
@@ -579,7 +580,11 @@ function ProviderConnectStep({
     </div>
   );
   const [manifestCopied, setManifestCopied] = useState(false);
-  const [webhookSecretCopied, setWebhookSecretCopied] = useState(false);
+  // A hook rather than a sticky boolean: this step stays mounted when the
+  // secret is regenerated, so a latched "copied" would keep vouching for a
+  // value the reader never copied. The status resets itself, and a refused
+  // clipboard reads as a failure instead of a success.
+  const webhookSecretCopy = useCopyAction();
   const [privateKeyVisible, setPrivateKeyVisible] = useState(false);
   const [privateKeyFileError, setPrivateKeyFileError] = useState<string | null>(
     null,
@@ -1268,15 +1273,14 @@ settings:
                   type="button"
                   variant="outline"
                   onClick={() => {
-                    void copyTextToClipboard(generatedWebhookSecret).then(
-                      () => setWebhookSecretCopied(true),
-                      reportCopyFailure,
-                    );
+                    void webhookSecretCopy.copy(generatedWebhookSecret);
                   }}
                 >
-                  {webhookSecretCopied
+                  {webhookSecretCopy.copied
                     ? "Webhook secret copied"
-                    : "Copy webhook secret"}
+                    : webhookSecretCopy.failed
+                      ? "Couldn’t copy — select it manually"
+                      : "Copy webhook secret"}
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground">

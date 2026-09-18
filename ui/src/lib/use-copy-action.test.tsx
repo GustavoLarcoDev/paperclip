@@ -112,6 +112,36 @@ describe("useCopyAction", () => {
     await act(async () => { vi.advanceTimersByTime(1000); });
     expect(buttonByText("Copy")).toBeDefined();
   });
+
+  it("shows the newest click's outcome when an older write resolves late", async () => {
+    // Clipboard writes can settle out of order. Whatever the reader clicked
+    // last is what the control has to report — a stale failure must not
+    // overwrite a fresh success.
+    let failFirst: ((reason: Error) => void) | undefined;
+    writeText.mockReturnValueOnce(
+      new Promise<void>((_resolve, reject) => { failFirst = reject; }),
+    );
+    writeText.mockResolvedValue(undefined);
+    render(<InlineCopy />);
+
+    await clickCopy();
+    expect(buttonByText("Copy")).toBeDefined();
+
+    // Second click resolves immediately and takes over the display.
+    await clickCopy();
+    expect(buttonByText("Copied")).toBeDefined();
+
+    // Now the first write finally rejects. It is no longer in charge.
+    await act(async () => { failFirst?.(new Error("Clipboard unavailable")); });
+    expect(buttonByText("Copied")).toBeDefined();
+    expect(buttonByText("Copy failed")).toBeUndefined();
+
+    // And the stale click cannot reset the control out from under the new one.
+    await act(async () => { vi.advanceTimersByTime(999); });
+    expect(buttonByText("Copied")).toBeDefined();
+    await act(async () => { vi.advanceTimersByTime(1); });
+    expect(buttonByText("Copy")).toBeDefined();
+  });
 });
 
 describe("useCopyToast", () => {

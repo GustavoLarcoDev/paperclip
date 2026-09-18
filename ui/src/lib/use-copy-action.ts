@@ -19,6 +19,13 @@ const RESET_MS = 1500;
 export function useCopyAction(resetMs: number = RESET_MS) {
   const [status, setStatus] = useState<CopyStatus>("idle");
   const timerRef = useRef<number | null>(null);
+  /**
+   * Which click owns the visible status. Clipboard writes can resolve out of
+   * order, so without this a slow first copy could land after a fast second
+   * one and report the wrong attempt — or reset the status while the newer
+   * copy was still showing.
+   */
+  const latestCopyRef = useRef(0);
 
   useEffect(
     () => () => {
@@ -29,15 +36,20 @@ export function useCopyAction(resetMs: number = RESET_MS) {
 
   const copy = useCallback(
     async (text: string) => {
+      const token = ++latestCopyRef.current;
       let next: CopyStatus = "copied";
       try {
         await copyTextToClipboard(text);
       } catch {
         next = "failed";
       }
+      // A newer click has taken over the control; report this outcome to the
+      // caller but leave the display to whoever the reader is watching.
+      if (latestCopyRef.current !== token) return next;
       setStatus(next);
       if (timerRef.current !== null) window.clearTimeout(timerRef.current);
       timerRef.current = window.setTimeout(() => {
+        if (latestCopyRef.current !== token) return;
         setStatus("idle");
         timerRef.current = null;
       }, resetMs);

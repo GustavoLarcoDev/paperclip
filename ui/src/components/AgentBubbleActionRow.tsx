@@ -5,8 +5,7 @@ import type {
 } from "@paperclipai/shared";
 import { cn, formatShortDate } from "../lib/utils";
 import { timeAgo } from "../lib/timeAgo";
-import { copyTextToClipboard } from "../lib/clipboard";
-import { useCopyToast } from "../lib/use-copy-action";
+import { useCopyAction, useCopyToast } from "../lib/use-copy-action";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -25,7 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Check, Copy, MoreHorizontal, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Check, Copy, MoreHorizontal, ThumbsDown, ThumbsUp, X } from "lucide-react";
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -49,24 +48,26 @@ export function agentBubbleDateLabel(date: Date | string | undefined): string {
  * re-declaring the same button markup on each surface.
  */
 export function BubbleCopyButton({ copyText }: { copyText: string }) {
-  const [copied, setCopied] = useState(false);
+  const { copied, failed, copy } = useCopyAction(2000);
+  const label = failed ? "Couldn’t copy message" : "Copy message";
 
   return (
     <button
       type="button"
       className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-      title="Copy message"
-      aria-label="Copy message"
+      title={label}
+      aria-label={label}
       onClick={() => {
-        void copyTextToClipboard(copyText)
-          .then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-          })
-          .catch(() => {});
+        void copy(copyText);
       }}
     >
-      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+      {copied ? (
+        <Check className="h-3.5 w-3.5" />
+      ) : failed ? (
+        <X className="h-3.5 w-3.5 text-destructive" />
+      ) : (
+        <Copy className="h-3.5 w-3.5" />
+      )}
     </button>
   );
 }
