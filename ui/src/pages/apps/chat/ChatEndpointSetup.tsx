@@ -1273,9 +1273,12 @@ settings:
                   type="button"
                   variant="outline"
                   onClick={() => {
-                    // Failure goes to the toast, the way this step's other two
-                    // copy buttons already report it. The hook is here for the
-                    // success state, which must not latch.
+                    // Both signals, and each covers the other's blind spot.
+                    // The toast is the loud one, the way this step's other two
+                    // copy buttons report failure — but the provider dedupes an
+                    // identical toast inside 3.5s, so a reader who clicks twice
+                    // on a blocked clipboard would see nothing the second time.
+                    // The inline state answers every click.
                     void webhookSecretCopy
                       .copy(generatedWebhookSecret)
                       .then((status) => {
@@ -1285,7 +1288,9 @@ settings:
                 >
                   {webhookSecretCopy.copied
                     ? "Webhook secret copied"
-                    : "Copy webhook secret"}
+                    : webhookSecretCopy.failed
+                      ? "Couldn’t copy — select it manually"
+                      : "Copy webhook secret"}
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground">
