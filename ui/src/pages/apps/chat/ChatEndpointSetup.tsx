@@ -1273,14 +1273,19 @@ settings:
                   type="button"
                   variant="outline"
                   onClick={() => {
-                    void webhookSecretCopy.copy(generatedWebhookSecret);
+                    // Failure goes to the toast, the way this step's other two
+                    // copy buttons already report it. The hook is here for the
+                    // success state, which must not latch.
+                    void webhookSecretCopy
+                      .copy(generatedWebhookSecret)
+                      .then((status) => {
+                        if (status === "failed") reportCopyFailure();
+                      });
                   }}
                 >
                   {webhookSecretCopy.copied
                     ? "Webhook secret copied"
-                    : webhookSecretCopy.failed
-                      ? "Couldn’t copy — select it manually"
-                      : "Copy webhook secret"}
+                    : "Copy webhook secret"}
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground">
