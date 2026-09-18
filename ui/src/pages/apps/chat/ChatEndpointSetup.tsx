@@ -579,6 +579,7 @@ function ProviderConnectStep({
     </div>
   );
   const [manifestCopied, setManifestCopied] = useState(false);
+  const [webhookSecretCopied, setWebhookSecretCopied] = useState(false);
   const [privateKeyVisible, setPrivateKeyVisible] = useState(false);
   const [privateKeyFileError, setPrivateKeyFileError] = useState<string | null>(
     null,
@@ -1267,12 +1268,15 @@ settings:
                   type="button"
                   variant="outline"
                   onClick={() => {
-                    void copyTextToClipboard(generatedWebhookSecret).catch(
+                    void copyTextToClipboard(generatedWebhookSecret).then(
+                      () => setWebhookSecretCopied(true),
                       reportCopyFailure,
                     );
                   }}
                 >
-                  Copy webhook secret
+                  {webhookSecretCopied
+                    ? "Webhook secret copied"
+                    : "Copy webhook secret"}
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground">

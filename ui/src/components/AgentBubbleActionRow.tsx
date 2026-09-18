@@ -6,6 +6,7 @@ import type {
 import { cn, formatShortDate } from "../lib/utils";
 import { timeAgo } from "../lib/timeAgo";
 import { copyTextToClipboard } from "../lib/clipboard";
+import { useCopyToast } from "../lib/use-copy-action";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -109,6 +110,8 @@ export function AgentBubbleActionRow({
   menuItems?: ReactNode;
   className?: string;
 }) {
+  // The menu closes on click, so its copy confirmation has to outlive it.
+  const copyWithToast = useCopyToast();
   return (
     <div className={cn("mt-2 flex items-center gap-1", className)}>
       <BubbleCopyButton copyText={copyText} />
@@ -150,7 +153,7 @@ export function AgentBubbleActionRow({
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             onClick={() => {
-              void copyTextToClipboard(copyText).catch(() => {});
+              void copyWithToast(copyText, "Message copied");
             }}
           >
             <Copy className="mr-2 h-3.5 w-3.5" />
