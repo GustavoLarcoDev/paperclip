@@ -150,6 +150,22 @@ function radioContaining(text: string): HTMLButtonElement | undefined {
   );
 }
 
+/** The wizard stepper's progress dots, one per step. */
+function stepDots(): HTMLElement[] {
+  return Array.from(document.body.querySelectorAll<HTMLElement>("div.h-1.w-20.rounded-full"));
+}
+
+function stepDotCount(): number {
+  return stepDots().length;
+}
+
+/** The step names printed under the dots, e.g. "Access   ·   Sign in". */
+function stepLabelsOnScreen(): string[] {
+  const stepper = stepDots()[0]?.parentElement?.parentElement;
+  const labelLine = stepper?.querySelector("div.mt-2.text-xs")?.textContent ?? "";
+  return labelLine.split("·").map((label) => label.trim()).filter(Boolean);
+}
+
 /**
  * Advance past the Access step (PAP-17835), which now sits between picking a
  * curated app and entering its credential. Picks "Any agent" so Continue is
@@ -1835,6 +1851,25 @@ describe("AppsConnect — Connect with a link (M4 frame)", () => {
     expect(container.textContent).toContain("Preparing secure sign-in");
     expect(container.textContent).toContain("Preparing…");
     expect(connectAppMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the same steps when Notion sign-in takes over the wizard", async () => {
+    mockSearch.value = "source=notion";
+    listGalleryMock.mockResolvedValueOnce({ apps: [NOTION] });
+    connectAppMock.mockReturnValueOnce(new Promise(() => {}));
+
+    await render();
+
+    const stepsOnAccess = stepLabelsOnScreen();
+    expect(stepsOnAccess).toEqual(["Access", "Sign in"]);
+
+    await passAccessStep();
+    await submitCuratedOAuthSetup();
+
+    expect(container.textContent).toContain("Preparing secure sign-in");
+    // Connecting must not grow the stepper a step the flow never lands on.
+    expect(stepLabelsOnScreen()).toEqual(stepsOnAccess);
+    expect(stepDotCount()).toBe(stepsOnAccess.length);
   });
 
   it("backs from the sign-in checkpoint to Access without exiting the wizard", async () => {
