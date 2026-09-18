@@ -29,6 +29,16 @@ import { matchSafeQuestionValidationPattern } from "./question-validation-patter
 type Question = PaperclipQuestionSet["questions"][number];
 type Answer = PaperclipQuestionResponse["answers"][string];
 
+/**
+ * A form-level message, tagged with whether answering a question resolves it.
+ *
+ * Only a missing-answer complaint is something a selection can settle. A send
+ * that failed is not: the answers are still unsent, so the message has to
+ * outlive the next click rather than disappear the moment the reader touches
+ * an option.
+ */
+type FormError = { message: string; fromMissingAnswer?: boolean };
+
 export interface QuestionFormProps {
   id: string;
   questionSet: PaperclipQuestionSet;
@@ -263,7 +273,7 @@ export function QuestionForm({
   );
   const [working, setWorking] = useState<"submit" | "cancel" | null>(null);
   const [inputUploading, setInputUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<FormError | null>(null);
   const promptRef = useRef<HTMLParagraphElement>(null);
   const previousPage = useRef(page);
 
@@ -343,7 +353,11 @@ export function QuestionForm({
       // Picking an option answers the question; it does not navigate. Moving on
       // stays an explicit act — Next, the pagination arrows, or Submit — so a
       // misclick never costs the reader the page they were still reading.
-      setError(null);
+      //
+      // Clear only the complaint this selection actually answers. A failed send
+      // has to survive it, or the last page quietly loses the one sign that the
+      // answers never left.
+      setError((current) => (current?.fromMissingAnswer ? null : current));
     }
   }
 
@@ -370,9 +384,10 @@ export function QuestionForm({
       // validating, and a restored draft can land past it. Go back to that
       // question and say so rather than dropping the send.
       setPage(invalidIndex);
-      setError(
-        `Question ${invalidIndex + 1} needs an answer before you can send.`,
-      );
+      setError({
+        message: `Question ${invalidIndex + 1} needs an answer before you can send.`,
+        fromMissingAnswer: true,
+      });
       return;
     }
     setWorking("submit");
@@ -384,11 +399,12 @@ export function QuestionForm({
       });
       if (draftKey) clearDraft(draftKey);
     } catch (cause) {
-      setError(
-        cause instanceof Error
-          ? cause.message
-          : "The answers could not be submitted.",
-      );
+      setError({
+        message:
+          cause instanceof Error
+            ? cause.message
+            : "The answers could not be submitted.",
+      });
     } finally {
       setWorking(null);
     }
@@ -402,11 +418,12 @@ export function QuestionForm({
       await onCancel();
       if (draftKey) clearDraft(draftKey);
     } catch (cause) {
-      setError(
-        cause instanceof Error
-          ? cause.message
-          : "The questions could not be cancelled.",
-      );
+      setError({
+        message:
+          cause instanceof Error
+            ? cause.message
+            : "The questions could not be cancelled.",
+      });
     } finally {
       setWorking(null);
     }
@@ -639,7 +656,7 @@ export function QuestionForm({
       <div aria-live="assertive">
         {error ? (
           <div className="mt-2 rounded-sm border border-destructive/60 bg-destructive/10 px-2.5 py-2 text-sm text-destructive">
-            {error}
+            {error.message}
           </div>
         ) : null}
       </div>

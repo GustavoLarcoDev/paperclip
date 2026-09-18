@@ -2378,6 +2378,72 @@ describe("TaskChatComposer", () => {
           .toBe("true");
         expect(container.textContent).toContain("1 of 3");
       });
+
+      // Selection now clears the form error, which it did not do on the last
+      // page before. A failed send has to outlive it: the answers are still
+      // unsent, so wiping the message would leave no sign of that at all.
+      it("keeps a failed send visible while the reader changes their answer", async () => {
+        const onSubmit = vi.fn().mockRejectedValue(new Error("Network unreachable"));
+        render(
+          <QuestionForm
+            id="failed-send"
+            questionSet={{
+              schema: "paperclip.question_set.v1" as const,
+              questions: [{
+                id: "only", prompt: "Only", required: true,
+                answerMode: "single_select" as const,
+                options: [{ id: "yes", label: "Yes" }, { id: "no", label: "No" }],
+              }],
+            }}
+            onSubmit={onSubmit}
+          />,
+        );
+        const radios = () => Array.from(container.querySelectorAll<HTMLButtonElement>('[role="radio"]'));
+        act(() => { flushSync(() => radios()[0]!.click()); });
+        act(() => { flushSync(() => buttonByText("Submit answers")!.click()); });
+        await flushAsync();
+        expect(onSubmit).toHaveBeenCalledOnce();
+        expect(container.textContent).toContain("Network unreachable");
+        act(() => { flushSync(() => radios()[1]!.click()); });
+        expect(radios()[1]?.getAttribute("aria-checked")).toBe("true");
+        expect(container.textContent).toContain("Network unreachable");
+      });
+
+      // The other half of the same rule: the one complaint a selection does
+      // answer still goes away when it is answered.
+      it("clears a missing-answer complaint once that question is answered", async () => {
+        render(
+          <QuestionForm
+            id="missing-answer"
+            questionSet={{
+              schema: "paperclip.question_set.v1" as const,
+              questions: [
+                {
+                  id: "First", prompt: "First", required: true,
+                  answerMode: "single_select" as const,
+                  options: [{ id: "yes", label: "Yes" }, { id: "no", label: "No" }],
+                },
+                {
+                  id: "Second", prompt: "Second", required: false,
+                  answerMode: "single_select" as const,
+                  options: [{ id: "yes", label: "Yes" }, { id: "no", label: "No" }],
+                },
+              ],
+            }}
+            onSubmit={vi.fn()}
+          />,
+        );
+        const radios = () => Array.from(container.querySelectorAll<HTMLButtonElement>('[role="radio"]'));
+        // The pagination arrow browses without validating, so the reader can
+        // reach the end with the first question still blank. Skip on the last
+        // question then sends, which is where the complaint comes from.
+        click('[aria-label="Next question"]');
+        act(() => { flushSync(() => buttonByText("Skip")!.click()); });
+        await flushAsync();
+        expect(container.textContent).toContain("Question 1 needs an answer");
+        act(() => { flushSync(() => radios()[0]!.click()); });
+        expect(container.textContent).not.toContain("Question 1 needs an answer");
+      });
     });
 
     it("Skip on the last question submits the other answers", async () => {
