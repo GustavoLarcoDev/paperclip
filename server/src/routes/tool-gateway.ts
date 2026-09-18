@@ -178,12 +178,17 @@ async function handleMcpGatewayProtocol(
       const contentText = typeof resultRecord?.content === "string"
         ? resultRecord.content
         : JSON.stringify(resultRecord?.data ?? result.result ?? null);
+      // MCP requires structuredContent to be an object when present. Clients
+      // reject `null`, which would hide the text result behind a schema error.
+      const structuredContent = resultRecord?.data && typeof resultRecord.data === "object" && !Array.isArray(resultRecord.data)
+        ? resultRecord.data as Record<string, unknown>
+        : undefined;
       res.json({
         jsonrpc: "2.0",
         id,
         result: {
           content: [{ type: "text", text: contentText }],
-          structuredContent: resultRecord?.data ?? null,
+          ...(structuredContent ? { structuredContent } : {}),
           isError: false,
         },
       });
