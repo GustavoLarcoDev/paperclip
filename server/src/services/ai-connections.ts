@@ -434,7 +434,13 @@ export function aiConnectionService(db: Db) {
     verifiedCredential: string,
     sessionId?: string,
     attemptStartedAt = new Date(),
+    options: { hostLogin?: boolean } = {},
   ) {
+    // Imported from this machine's own Claude Code login (local operator only).
+    const aiHostLogin =
+      options.hostLogin === true &&
+      input.provider === "anthropic" &&
+      input.method === "subscription";
     if (!(await membership(companyId, userId)))
       throw forbidden("An active company member must own this connection");
     const reconnect = input.connectionId
@@ -625,7 +631,7 @@ export function aiConnectionService(db: Db) {
             status: "active",
             healthStatus: "ok",
             healthMessage: null,
-            config: { ...reconnect.connection.config, aiIsolatedSubscription: input.method === "subscription" && input.provider !== "anthropic" },
+            config: { ...reconnect.connection.config, aiIsolatedSubscription: input.method === "subscription" && input.provider !== "anthropic", aiHostLogin },
             updatedAt: new Date(),
           })
           .where(eq(toolConnections.id, id));
@@ -650,6 +656,7 @@ export function aiConnectionService(db: Db) {
               sourceTemplateKey: input.provider,
               ai: { provider: input.provider, method: input.method },
               aiIsolatedSubscription: input.method === "subscription" && input.provider !== "anthropic",
+              aiHostLogin,
             },
             createdByUserId: userId,
           });
