@@ -12,7 +12,7 @@ import { createDb, companies, agents, heartbeatRuns, companyMemberships, connect
 import { startEmbeddedPostgresTestDatabase } from "@paperclipai/db/test-embedded-postgres";
 import { aiConnectionService } from "../services/ai-connections.js";
 import * as executionTarget from "@paperclipai/adapter-utils/execution-target";
-import { prepareManagedAiRuntime, assertManagedAiProjectAuth } from "../services/ai-connection-runtime.js";
+import { prepareManagedAiRuntime, assertManagedAiProjectAuth, configureAiConnectionHostLogin } from "../services/ai-connection-runtime.js";
 import { toolAccessService } from "../services/tool-access.js";
 import { secretService } from "../services/secrets.js";
 import { aiConnectionBindingSchema, connectionPurposeTransportSchema, isAiConnectionCompatible } from "@paperclipai/shared";
@@ -295,6 +295,95 @@ describe("managed AI connections", () => {
       await Promise.all([first.cleanup(), second.cleanup()]);
     }
   });
+  it("runs a host-login Claude subscription on the live host login only on a local trusted host", async () => {
+    const hostUser = "host-login-user";
+    await db.insert(companyMemberships).values({ companyId, principalId: hostUser, principalType: "user", status: "active", membershipRole: "member" });
+    const saved = await service.save(companyId, hostUser, { provider: "anthropic", method: "subscription", ownership: "personal", name: "This Mac's Claude Code", allAgents: true, agentIds: [] }, "fixture-host-snapshot", undefined, new Date(), { hostLogin: true });
+    const [row] = await db.select().from(toolConnections).where(eq(toolConnections.id, saved.connectionId));
+    expect(row.config.aiHostLogin).toBe(true);
+    await service.setDefault(companyId, hostUser, saved.grantId);
+    const run = { ...input, binding: { provider: "anthropic", method: "subscription", mode: "responsible_user" } as const, responsibleUserId: hostUser, config: { model: "same-model", env: { KEEP_ME: "yes", CLAUDE_CODE_OAUTH_TOKEN: "ambient", ANTHROPIC_API_KEY: "ambient" } } };
+    // An earlier test stubs a server-level ANTHROPIC_API_KEY, which disables host login.
+    const serverKey = process.env.ANTHROPIC_API_KEY;
+    delete process.env.ANTHROPIC_API_KEY;
+    try {
+      configureAiConnectionHostLogin({ deploymentMode: "local_trusted" });
+      const live = await prepareManagedAiRuntime(db, { ...run, hostLoginAvailable: true });
+      const liveEnv = live.config.env as Record<string, unknown>;
+      expect(liveEnv).toEqual({ KEEP_ME: "yes" });
+      expect(live.config).not.toHaveProperty("managedAiConnection");
+      expect(live.identity).toBe(`${saved.grantId}:${hostUser}:host-login`);
+      expect(live.attribution).toMatchObject({ provider: "anthropic", method: "subscription" });
+      await live.cleanup();
+
+      // A remote target, or a server that is not local trusted, keeps the snapshot.
+      for (const [deploymentMode, hostLoginAvailable] of [["local_trusted", false], ["authenticated", true], [undefined, true]] as const) {
+        configureAiConnectionHostLogin({ deploymentMode });
+        const snapshot = await prepareManagedAiRuntime(db, { ...run, hostLoginAvailable });
+        try {
+          expect((snapshot.config.env as Record<string, unknown>).CLAUDE_CODE_OAUTH_TOKEN).toBe("fixture-host-snapshot");
+          expect(snapshot.config).toHaveProperty("managedAiConnection");
+        } finally { await snapshot.cleanup(); }
+      }
+    } finally {
+      if (serverKey !== undefined) process.env.ANTHROPIC_API_KEY = serverKey;
+      configureAiConnectionHostLogin({});
+    }
+  });
+
+  it("keeps the stored host-login token for runner lanes, conflicting server env and an isolated reconnect", async () => {
+    const hostUser = "host-login-edge-user";
+    await db.insert(companyMemberships).values({ companyId, principalId: hostUser, principalType: "user", status: "active", membershipRole: "member" });
+    const intent = { provider: "anthropic", method: "subscription", ownership: "personal", name: "This Mac's Claude Code (edge)", allAgents: true, agentIds: [] } as const;
+    const saved = await service.save(companyId, hostUser, intent, "fixture-host-snapshot", undefined, new Date(), { hostLogin: true });
+    await service.setDefault(companyId, hostUser, saved.grantId);
+    const run = { ...input, binding: { provider: "anthropic", method: "subscription", mode: "responsible_user" } as const, responsibleUserId: hostUser, hostLoginAvailable: true, config: { model: "same-model" } };
+    const tokenOf = async (overrides: Record<string, unknown>) => {
+      const prepared = await prepareManagedAiRuntime(db, { ...run, ...overrides });
+      try { return (prepared.config.env as Record<string, unknown>).CLAUDE_CODE_OAUTH_TOKEN; } finally { await prepared.cleanup(); }
+    };
+    const serverKey = process.env.ANTHROPIC_API_KEY;
+    delete process.env.ANTHROPIC_API_KEY;
+    try {
+      configureAiConnectionHostLogin({ deploymentMode: "local_trusted" });
+      expect(await tokenOf({})).toBeUndefined();
+      expect(await tokenOf({ adapterType: "paperclip_runner", config: { model: "same-model", provider: "acpx", acpxAgent: "claude" } })).toBe("fixture-host-snapshot");
+      process.env.ANTHROPIC_API_KEY = "server-key";
+      expect(await tokenOf({})).toBe("fixture-host-snapshot");
+      delete process.env.ANTHROPIC_API_KEY;
+
+      await service.save(companyId, hostUser, { ...intent, connectionId: saved.connectionId }, "fixture-isolated-token");
+      const [isolated] = await db.select().from(toolConnections).where(eq(toolConnections.id, saved.connectionId));
+      expect(isolated.config.aiHostLogin).toBe(false);
+      expect(await tokenOf({})).toBe("fixture-isolated-token");
+      await service.save(companyId, hostUser, { ...intent, connectionId: saved.connectionId }, "fixture-host-again", undefined, new Date(), { hostLogin: true });
+      const [reimported] = await db.select().from(toolConnections).where(eq(toolConnections.id, saved.connectionId));
+      expect(reimported.config.aiHostLogin).toBe(true);
+      expect(await tokenOf({})).toBeUndefined();
+    } finally {
+      if (serverKey === undefined) delete process.env.ANTHROPIC_API_KEY; else process.env.ANTHROPIC_API_KEY = serverKey;
+      configureAiConnectionHostLogin({});
+    }
+  });
+
+  it("keeps an isolated-login Claude subscription on its stored credential on a local trusted host", async () => {
+    const isolatedUser = "isolated-login-user";
+    await db.insert(companyMemberships).values({ companyId, principalId: isolatedUser, principalType: "user", status: "active", membershipRole: "member" });
+    const saved = await service.save(companyId, isolatedUser, { provider: "anthropic", method: "subscription", ownership: "personal", name: "Separate Claude login", allAgents: true, agentIds: [] }, "fixture-isolated-token");
+    const [row] = await db.select().from(toolConnections).where(eq(toolConnections.id, saved.connectionId));
+    expect(row.config.aiHostLogin).toBe(false);
+    await service.setDefault(companyId, isolatedUser, saved.grantId);
+    try {
+      configureAiConnectionHostLogin({ deploymentMode: "local_trusted" });
+      const run = await prepareManagedAiRuntime(db, { ...input, binding: { provider: "anthropic", method: "subscription", mode: "responsible_user" }, responsibleUserId: isolatedUser, hostLoginAvailable: true, config: { model: "same-model" } });
+      try {
+        expect((run.config.env as Record<string, unknown>).CLAUDE_CODE_OAUTH_TOKEN).toBe("fixture-isolated-token");
+      } finally { await run.cleanup(); }
+    } finally {
+      configureAiConnectionHostLogin({});
+    }
+  });
+
   it("runs a same-agent OpenAI subscription child alongside a still-open parent", async () => {
     const userId = "subscription-contention-user";
     await db.insert(companyMemberships).values({ companyId, principalId: userId, principalType: "user", status: "active", membershipRole: "member" });
@@ -526,6 +615,8 @@ describe("managed AI connections", () => {
       const connected = await request(app).post(url).set("x-local", "yes").send(payload);
       expect(connected.status).toBe(201);
       expect(JSON.stringify(connected.body)).not.toContain("fixture-local-token");
+      const [imported] = await db.select().from(toolConnections).where(eq(toolConnections.id, connected.body.connectionId));
+      expect(imported.config.aiHostLogin).toBe(true);
       const before = await db.select().from(toolConnectionInstalls).where(eq(toolConnectionInstalls.connectionId, connected.body.connectionId));
       expect(before.map(i => [i.targetType, i.targetId])).toEqual([["agent", agentId]]);
       const reconnected = await request(app).post(url).set("x-local", "yes").send({ ...payload, connectionId: connected.body.connectionId, allAgents: true });

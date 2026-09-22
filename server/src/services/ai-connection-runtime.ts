@@ -8,6 +8,7 @@ import { type Db, companySecrets, connectionGrants } from "@paperclipai/db";
 import {
   AI_CONNECTION_CAPABILITIES,
   type AiConnectionBinding,
+  type DeploymentMode,
 } from "@paperclipai/shared";
 import { aiConnectionService } from "./ai-connections.js";
 import { secretService } from "./secrets.js";
@@ -15,6 +16,24 @@ import { decideCodexAuthMerge } from "@paperclipai/adapter-codex-local/server";
 import type { AdapterExecutionTarget } from "@paperclipai/adapter-utils/execution-target";
 import { runAdapterExecutionTargetProcess } from "@paperclipai/adapter-utils/execution-target";
 import { decideGrokAuthMerge } from "@paperclipai/adapter-grok-local/server";
+
+// A Claude subscription imported from this machine's own Claude Code login
+// (`aiHostLogin`) stores a snapshot of a short-lived access token. On a local
+// trusted server, runs on this host use that live login instead, so the CLI
+// refreshes it. Set once at startup; unset keeps the stored snapshot.
+let hostLoginDeploymentMode: DeploymentMode | undefined;
+const HOST_LOGIN_CONFLICTING_ENV_KEYS = [
+  "ANTHROPIC_API_KEY",
+  "ANTHROPIC_AUTH_TOKEN",
+  "CLAUDE_CODE_OAUTH_TOKEN",
+  "ANTHROPIC_BASE_URL",
+  "CLAUDE_CODE_USE_BEDROCK",
+  "CLAUDE_CODE_USE_VERTEX",
+  "CLAUDE_CODE_USE_FOUNDRY",
+] as const;
+export function configureAiConnectionHostLogin(options: { deploymentMode?: DeploymentMode }) {
+  hostLoginDeploymentMode = options.deploymentMode;
+}
 
 export function isAiConnectionBusy(error: unknown): error is HttpError {
   return error instanceof HttpError && error.status === 422 &&
@@ -177,6 +196,8 @@ export async function prepareManagedAiRuntime(
     allowUninstalledPersonal?: boolean;
     allowUninstalledShared?: boolean;
     allowLegacyValidation?: boolean;
+    /** True when the run executes on this server host, not a remote target. */
+    hostLoginAvailable?: boolean;
     config: Record<string, unknown>;
   },
 ) {
@@ -225,6 +246,33 @@ export async function prepareManagedAiRuntime(
       throw unprocessable(
         "The selected default changed. Retry this execution.",
       );
+    if (
+      input.hostLoginAvailable === true &&
+      hostLoginDeploymentMode === "local_trusted" &&
+      // Only claude_local reads the host HOME and Keychain; other lanes
+      // (paperclip_runner) isolate them and still need the stored token.
+      input.adapterType === "claude_local" &&
+      input.binding.provider === "anthropic" &&
+      selection.attribution.method === "subscription" &&
+      selection.connection.config?.aiHostLogin === true &&
+      // Host credentials or routing in the server env would take precedence
+      // over the login, so the run would not use the account it is billed to.
+      !HOST_LOGIN_CONFLICTING_ENV_KEYS.some((key) => process.env[key]?.trim())
+    ) {
+      // Run as an unmanaged local agent: the CLI reads and refreshes the
+      // host login itself. Only the credential bindings are removed. The
+      // identity no longer tracks the account behind the login, so a host
+      // re-login to another account does not reset sessions.
+      const identity = `${selection.grant.id}:${input.responsibleUserId ?? "shared"}:host-login`;
+      return {
+        config: { ...input.config, env: stripAiAuthBindings(input.config.env) },
+        attribution: selection.attribution,
+        accountName: selection.connection.name,
+        accountOwnerUserId: selection.grant.subjectUserId,
+        identity,
+        cleanup: async () => {},
+      };
+    }
     const value = await service.credential(selection);
     home = await mkdtemp(
       path.join(

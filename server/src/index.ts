@@ -6,6 +6,7 @@
 import { instrumentationReady, shutdownInstrumentation } from "./instrumentation.js";
 import { sentryReady, shutdownSentry, captureException } from "./sentry.js";
 import { waitForPendingRunFailureReports } from "./services/run-failure-report.js";
+import { configureAiConnectionHostLogin } from "./services/ai-connection-runtime.js";
 import { verifyStoppedNativeSessionForReplacement } from "./services/native-runtime/native-session-executor.js";
 import { embeddedPostgresOwnerPort } from "./embedded-postgres-owner.js";
 import { deliverExecutionStatuses } from "./services/execution-status-delivery.js";
@@ -661,6 +662,9 @@ async function startServerWithDatabaseTeardown(
   if (config.deploymentMode === "local_trusted" && config.deploymentExposure !== "private") {
     throw new Error("local_trusted mode only supports private exposure");
   }
+  // After the guards above: a host-login AI connection may use this machine's
+  // live Claude Code login only on a loopback, private, local trusted server.
+  configureAiConnectionHostLogin({ deploymentMode: config.deploymentMode });
   
   if (config.deploymentMode === "authenticated") {
     if (config.authBaseUrlMode === "explicit" && !config.authPublicBaseUrl) {
