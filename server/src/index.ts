@@ -15,6 +15,7 @@ import { reconcileSafeNativeReplacements } from "./services/native-runtime/nativ
 import { reconcileAbandonedExecutionControl } from "./services/execution-control-reconciliation.js";
 import { EXECUTION_RECONCILIATION_INTERVAL_MS } from "./services/execution-control-deadline.js";
 import { connectionIntentDeliveryService } from "./services/connection-intent-delivery.js";
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { createServer } from "node:http";
 import { resolve } from "node:path";
@@ -512,7 +513,38 @@ async function startServerWithDatabaseTeardown(
       }
     };
   
-    const runningPid = getRunningPid();
+    // A Postgres whose parent is init was left behind by a server that died
+    // without shutting down (for example a closed terminal). Reusing it would
+    // leave it unsupervised and never stopped, so stop it and start our own.
+    const isOrphanedPostgres = (pid: number): boolean => {
+      if (process.platform === "win32" || process.pid === 1) return false;
+      try {
+        const ppid = Number(execFileSync("ps", ["-o", "ppid=", "-p", String(pid)], { encoding: "utf8" }).trim());
+        return ppid === 1;
+      } catch {
+        return false;
+      }
+    };
+    const stopOrphanedPostgres = async (pid: number): Promise<boolean> => {
+      logger.warn(`Embedded PostgreSQL pid=${pid} is orphaned; stopping it before starting a supervised instance`);
+      try {
+        // SIGINT is Postgres "fast" shutdown: roll back open transactions and
+        // checkpoint, without waiting for idle clients.
+        process.kill(pid, "SIGINT");
+      } catch {
+        return !isPidRunning(pid);
+      }
+      for (let attempt = 0; attempt < 60; attempt += 1) {
+        if (!isPidRunning(pid)) return true;
+        await new Promise((resolveWait) => setTimeout(resolveWait, 500));
+      }
+      return !isPidRunning(pid);
+    };
+
+    let runningPid = getRunningPid();
+    if (runningPid && isOrphanedPostgres(runningPid) && (await stopOrphanedPostgres(runningPid))) {
+      runningPid = null;
+    }
     if (runningPid) {
       port = embeddedPostgresOwnerPort(readFileSync(postmasterPidFile, "utf8"), dataDir, runningPid);
       const actualDataDir = await getPostgresDataDirectory(`postgres://paperclip:paperclip@127.0.0.1:${port}/postgres`);
@@ -2017,12 +2049,17 @@ async function startServerWithDatabaseTeardown(
     if (exitProcess) process.exit(0);
   };
 
-  process.once("SIGINT", () => {
-    void shutdown("SIGINT", true);
-  });
-  process.once("SIGTERM", () => {
-    void shutdown("SIGTERM", true);
-  });
+  // Closing the terminal sends SIGHUP to the whole process group, often right
+  // before the dev runner forwards SIGTERM. Run one shutdown for all of them so
+  // embedded Postgres is stopped once instead of being left running.
+  let signalShutdown: Promise<void> | null = null;
+  const shutdownOnSignal = (signal: "SIGINT" | "SIGTERM") => {
+    signalShutdown ??= shutdown(signal, true);
+    void signalShutdown;
+  };
+  process.once("SIGINT", () => shutdownOnSignal("SIGINT"));
+  process.once("SIGTERM", () => shutdownOnSignal("SIGTERM"));
+  process.once("SIGHUP", () => shutdownOnSignal("SIGTERM"));
 
   return {
     server,
