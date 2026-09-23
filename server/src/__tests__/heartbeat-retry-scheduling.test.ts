@@ -187,6 +187,7 @@ describeEmbeddedPostgres("heartbeat bounded retry scheduling", () => {
     agentId: string;
     now: Date;
     errorCode: string;
+    error?: string;
     errorFamily?: "transient_upstream" | "provider_quota" | null;
     retryNotBefore?: string | null;
     scheduledRetryAttempt?: number;
@@ -227,7 +228,7 @@ describeEmbeddedPostgres("heartbeat bounded retry scheduling", () => {
       agentId: input.agentId,
       invocationSource: "assignment",
       status: "failed",
-      error: "upstream overload",
+      error: input.error ?? "upstream overload",
       errorCode: input.errorCode,
       finishedAt: input.now,
       scheduledRetryAttempt: input.scheduledRetryAttempt ?? 0,
@@ -2064,6 +2065,98 @@ describeEmbeddedPostgres("heartbeat bounded retry scheduling", () => {
     expect((wakeupRequest?.payload as Record<string, unknown> | null)?.transientRetryNotBefore).toBe(
       retryNotBefore.toISOString(),
     );
+  });
+
+  async function readScheduledRetryCount(companyId: string) {
+    return db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(heartbeatRuns)
+      .where(and(eq(heartbeatRuns.companyId, companyId), eq(heartbeatRuns.status, "scheduled_retry")))
+      .then((rows) => rows[0]?.count ?? 0);
+  }
+
+  it.each([
+    {
+      name: "an ACP terminal access failure",
+      errorCode: "acpx_turn_failed",
+      error: "ACP agent reported a terminal access failure.",
+      failure: "provider_access",
+    },
+    {
+      name: "a login-required failure",
+      errorCode: "claude_auth_required",
+      error: "Claude is not logged in.",
+      failure: "provider_access",
+    },
+    {
+      name: "an ACP terminal limit failure without a reset time",
+      errorCode: "acpx_turn_failed",
+      error: "ACP agent reported a terminal limit failure.",
+      failure: "provider_usage_limit",
+    },
+  ])("does not schedule a transient retry for $name", async ({ errorCode, error, failure }) => {
+    const runId = randomUUID(), companyId = randomUUID(), agentId = randomUUID();
+    const now = new Date("2026-04-20T12:00:00.000Z");
+    await seedRetryFixture({ runId, companyId, agentId, now, errorCode, error, adapterType: "claude_local" });
+
+    const outcome = await heartbeat.scheduleBoundedRetry(runId, { now, random: () => 0.5 });
+    expect(outcome).toEqual({ outcome: "retry_exhausted", attempt: 1, maxAttempts: 0 });
+    // Repeated recovery sweeps reuse the one exhaustion receipt.
+    expect(await heartbeat.scheduleBoundedRetry(runId, { now, random: () => 0.5 })).toEqual(outcome);
+    expect(await readScheduledRetryCount(companyId)).toBe(0);
+
+    const events = await db
+      .select({ message: heartbeatRunEvents.message, payload: heartbeatRunEvents.payload })
+      .from(heartbeatRunEvents)
+      .where(eq(heartbeatRunEvents.runId, runId));
+    expect(events).toHaveLength(1);
+    expect(events[0]?.message).toContain("Bounded retry exhausted");
+    expect(events[0]?.payload).toMatchObject({
+      retryReason: "transient_failure",
+      maxAttempts: 0,
+      nonRetryableFailure: failure,
+    });
+  });
+
+  it("schedules an ACP terminal limit failure at its persisted reset time", async () => {
+    const runId = randomUUID(), companyId = randomUUID(), agentId = randomUUID();
+    const now = new Date("2026-04-20T12:00:00.000Z");
+    const retryNotBefore = new Date("2026-04-20T17:00:00.000Z");
+    await seedRetryFixture({
+      runId,
+      companyId,
+      agentId,
+      now,
+      errorCode: "acpx_turn_failed",
+      error: "ACP agent reported a terminal limit failure.",
+      adapterType: "claude_local",
+      retryNotBefore: retryNotBefore.toISOString(),
+    });
+
+    const scheduled = await heartbeat.scheduleBoundedRetry(runId, { now, random: () => 0.5 });
+    expect(scheduled.outcome).toBe("scheduled");
+    if (scheduled.outcome !== "scheduled") return;
+    expect(scheduled.dueAt.getTime()).toBe(retryNotBefore.getTime());
+    expect(await readScheduledRetryCount(companyId)).toBe(1);
+  });
+
+  it("keeps the bounded transient retry for other ACP terminal failures", async () => {
+    const runId = randomUUID(), companyId = randomUUID(), agentId = randomUUID();
+    const now = new Date("2026-04-20T12:00:00.000Z");
+    await seedRetryFixture({
+      runId,
+      companyId,
+      agentId,
+      now,
+      errorCode: "acpx_turn_failed",
+      error: "ACP agent reported a terminal service failure.",
+      adapterType: "claude_local",
+    });
+
+    const scheduled = await heartbeat.scheduleBoundedRetry(runId, { now, random: () => 0.5 });
+    expect(scheduled.outcome).toBe("scheduled");
+    if (scheduled.outcome !== "scheduled") return;
+    expect(scheduled.dueAt.getTime()).toBe(now.getTime() + BOUNDED_TRANSIENT_HEARTBEAT_RETRY_DELAYS_MS[0]);
   });
 
   describe("run-dispatch module transactions", () => {

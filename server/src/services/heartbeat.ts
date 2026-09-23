@@ -1094,6 +1094,51 @@ function readTransientRecoveryContractFromRun(
     : null;
 }
 
+// The patched acpx runtime (patches/acpx@0.13.1.patch) surfaces a typed ACP
+// session failure as "ACP agent reported a terminal <category> failure.".
+// `access` means the provider rejected the login or subscription, and `limit`
+// means the subscription usage limit is spent. Replaying either turn after the
+// bounded transient delay fails identically and only spends quota, so neither
+// takes the generic failure budget. The auth-required codes are the same
+// login failure reported before the turn starts.
+const ACP_TERMINAL_SESSION_FAILURE_RE =
+  /ACP agent reported a terminal (\w+) failure\./i;
+const PROVIDER_ACCESS_FAILURE_ERROR_CODES = new Set([
+  "acpx_auth_required",
+  "claude_auth_required",
+]);
+
+function readAcpTerminalSessionFailureCategory(
+  run: Pick<typeof heartbeatRuns.$inferSelect, "error" | "resultJson">,
+) {
+  const resultJson = parseObject(run.resultJson);
+  for (const value of [
+    run.error,
+    resultJson.errorMessage,
+    resultJson.stopReason,
+  ]) {
+    if (typeof value !== "string") continue;
+    const match = ACP_TERMINAL_SESSION_FAILURE_RE.exec(value);
+    if (match?.[1]) return match[1].toLowerCase();
+  }
+  return null;
+}
+
+export function classifyNonRetryableProviderFailure(
+  run: Pick<
+    typeof heartbeatRuns.$inferSelect,
+    "error" | "errorCode" | "resultJson"
+  >,
+): "provider_access" | "provider_usage_limit" | null {
+  if (run.errorCode && PROVIDER_ACCESS_FAILURE_ERROR_CODES.has(run.errorCode)) {
+    return "provider_access";
+  }
+  const category = readAcpTerminalSessionFailureCategory(run);
+  if (category === "access") return "provider_access";
+  if (category === "limit") return "provider_usage_limit";
+  return null;
+}
+
 function isSpawnLikeFailureMessage(value: unknown) {
   if (typeof value !== "string") return false;
   return /failed to start command|spawn\b|\bENOENT\b/i.test(value);
@@ -15127,12 +15172,34 @@ export function heartbeatService(
       opts?.retryReason ?? BOUNDED_TRANSIENT_HEARTBEAT_RETRY_REASON;
     const wakeReason =
       opts?.wakeReason ?? BOUNDED_TRANSIENT_HEARTBEAT_RETRY_WAKE_REASON;
-    const maxAttempts = Math.max(
-      0,
-      Math.floor(
-        opts?.maxAttempts ?? BOUNDED_TRANSIENT_HEARTBEAT_RETRY_MAX_ATTEMPTS,
-      ),
-    );
+    const nonRetryableProviderFailure =
+      retryReason === BOUNDED_TRANSIENT_HEARTBEAT_RETRY_REASON
+        ? classifyNonRetryableProviderFailure(run)
+        : null;
+    // A spent usage limit may only retry at a persisted reset time; without
+    // one there is no safe moment to replay the turn. Suppressed failures get
+    // a zero budget so they reuse the deduplicated exhaustion receipt.
+    const usageLimitRetryNotBefore =
+      nonRetryableProviderFailure === "provider_usage_limit"
+        ? readTransientRetryNotBeforeFromRun(run)
+        : null;
+    const suppressedProviderFailure =
+      nonRetryableProviderFailure === "provider_access" ||
+      (nonRetryableProviderFailure === "provider_usage_limit" &&
+        !(
+          usageLimitRetryNotBefore &&
+          usageLimitRetryNotBefore.getTime() > now.getTime()
+        ))
+        ? nonRetryableProviderFailure
+        : null;
+    const maxAttempts = suppressedProviderFailure
+      ? 0
+      : Math.max(
+          0,
+          Math.floor(
+            opts?.maxAttempts ?? BOUNDED_TRANSIENT_HEARTBEAT_RETRY_MAX_ATTEMPTS,
+          ),
+        );
     const nextAttempt =
       (retryReason === WORKSPACE_BUSY_RETRY_REASON ||
       retryReason === AI_CONNECTION_BUSY_RETRY_REASON ||
@@ -15171,7 +15238,8 @@ export function heartbeatService(
       transientRecovery?.errorFamily === "transient_upstream"
         ? resolveCodexTransientFallbackMode(nextAttempt)
         : null;
-    const transientRetryNotBefore = transientRecovery?.retryNotBefore ?? null;
+    const transientRetryNotBefore =
+      transientRecovery?.retryNotBefore ?? usageLimitRetryNotBefore;
     const contextSnapshot = parseObject(run.contextSnapshot);
     const issueId = readNonEmptyString(contextSnapshot.issueId);
 
@@ -15185,8 +15253,12 @@ export function heartbeatService(
         eventType: "lifecycle",
         stream: "system",
         level: "warn",
-        message: `Bounded retry exhausted after ${run.scheduledRetryAttempt ?? 0} scheduled attempts; no further automatic retry will be queued`,
-        payload: exhaustion,
+        message: suppressedProviderFailure
+          ? `Bounded retry exhausted: ${suppressedProviderFailure === "provider_access" ? "the provider rejected the agent's login or subscription" : "the provider usage limit is spent and no reset time is known"}; no automatic retry will be queued`
+          : `Bounded retry exhausted after ${run.scheduledRetryAttempt ?? 0} scheduled attempts; no further automatic retry will be queued`,
+        payload: suppressedProviderFailure
+          ? { ...exhaustion, nonRetryableFailure: suppressedProviderFailure }
+          : exhaustion,
         retryExhaustion: exhaustion,
       });
       if (retryReason === INTERACTION_CONTINUATION_INFRA_RETRY_REASON) {
