@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "@/lib/router";
 import { SidebarSection } from "./SidebarSection";
 import { SidebarNavItem } from "./SidebarNavItem";
 import { SidebarAgents } from "./SidebarAgents";
@@ -50,7 +51,16 @@ import { PluginLauncherOutlet } from "@/plugins/launchers";
 import { SidebarCompanyMenu } from "./SidebarCompanyMenu";
 import { primarySidebarStyles } from "./primary-sidebar-styles";
 
+/** Command palette shortcut as shown on this platform (Cmd on Apple, Ctrl elsewhere). */
+function getSearchShortcutLabel() {
+  if (typeof navigator === "undefined") return "Ctrl K";
+  return /Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent) ? "⌘K" : "Ctrl K";
+}
+
 export function Sidebar({ children }: { children?: ReactNode }) {
+  const searchShortcutLabel = getSearchShortcutLabel();
+  const { pathname } = useLocation();
+  const costsActive = /\/activity\/costs(\/|$)/.test(pathname);
   const { openNewIssue } = useDialogActions();
   const { enabled: agentChatEnabled } = useAgentChatEnabled();
   // Every labeled section is collapsible (session-scoped, default open) —
@@ -164,7 +174,20 @@ export function Sidebar({ children }: { children?: ReactNode }) {
               width; a nav row also keeps search reachable from the
               collapsed rail, where the old header icon was dropped entirely.
               Cmd/Ctrl+K remains the keyboard path (command palette). */}
-          <SidebarNavItem to="/search" label="Search" icon={Search} />
+          <SidebarNavItem
+            to="/search"
+            label="Search"
+            icon={Search}
+            trailing={
+              <kbd
+                aria-hidden
+                data-testid="sidebar-search-shortcut"
+                className="ml-auto rounded border border-border bg-muted px-1.5 py-0.5 text-(length:--text-nano) font-medium text-muted-foreground"
+              >
+                {searchShortcutLabel}
+              </kbd>
+            }
+          />
           <SidebarNavItem to="/dashboard" label="Dashboard" icon={LayoutDashboard} liveCount={liveRunCount} />
           <SidebarNavItem
             to="/inbox"
@@ -243,7 +266,11 @@ export function Sidebar({ children }: { children?: ReactNode }) {
             <SidebarNavItem to="/agents" label="Agents" icon={Users} />
             <SidebarNavItem to="/skills" label="Skills" icon={Boxes} />
             <SidebarNavItem to="/apps" label="Connectors" icon={Unplug} />
-            <SidebarNavItem to="/activity" label="Audit" icon={History} />
+            {/* Costs is a section of the Audit hub; give it its own row and keep
+                Audit from also lighting up while Costs is the active page. */}
+            <SidebarNavItem to="/activity" label="Audit" icon={History} active={costsActive ? false : undefined} />
+            <SidebarNavItem to="/activity/costs" label="Costs" icon={DollarSign} />
+            <SidebarNavItem to="/company/settings" label="Settings" icon={Settings} />
           </SidebarSection>
         ) : null}
 

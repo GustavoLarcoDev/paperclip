@@ -133,6 +133,21 @@ export function AgentBasicsDialog({
       !getAdapterDisplay(adapter.type).comingSoon,
   );
   const validAdapter = choices.some((adapter) => adapter.type === adapterType);
+  // Lead with the adapters the display registry marks `recommended` (the same
+  // set onboarding offers under "Model source"); the rest stay one click away.
+  const recommended = choices.filter(
+    (adapter) => getAdapterDisplay(adapter.type).recommended,
+  );
+  const others = choices.filter(
+    (adapter) => !getAdapterDisplay(adapter.type).recommended,
+  );
+  const [showAllAdapters, setShowAllAdapters] = useState(false);
+  // Never hide the current selection (e.g. an adapter preselected via a link),
+  // and show everything when nothing is marked recommended.
+  const selectedIsOther = others.some((adapter) => adapter.type === adapterType);
+  const expanded =
+    showAllAdapters || selectedIsOther || recommended.length === 0;
+  const visibleChoices = expanded ? [...recommended, ...others] : recommended;
   return (
     <Dialog
       open={open}
@@ -226,8 +241,8 @@ export function AgentBasicsDialog({
                     {error.message}
                   </p>
                 )}
-                <div className={cn("grid grid-cols-2 gap-3", choices.length !== 4 && "sm:grid-cols-3")}>
-                  {choices.map((adapter) => {
+                <div className={cn("grid grid-cols-2 gap-3", visibleChoices.length !== 4 && "sm:grid-cols-3")}>
+                  {visibleChoices.map((adapter) => {
                     const display = getAdapterDisplay(adapter.type);
                     return (
                       <label
@@ -254,6 +269,9 @@ export function AgentBasicsDialog({
                           <span className="text-sm font-medium">
                             {display.label}
                           </span>
+                          <span className="text-xs text-muted-foreground">
+                            {display.description}
+                          </span>
                           {adapterType === adapter.type && (
                             <Check className="absolute right-2 top-2 size-3.5" />
                           )}
@@ -262,6 +280,21 @@ export function AgentBasicsDialog({
                     );
                   })}
                 </div>
+                {recommended.length > 0 &&
+                  others.length > 0 &&
+                  !selectedIsOther && (
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="px-0 text-muted-foreground"
+                      aria-expanded={expanded}
+                      onClick={() => setShowAllAdapters((value) => !value)}
+                    >
+                      {expanded
+                        ? "Show recommended only"
+                        : `Show all adapters (${others.length} more)`}
+                    </Button>
+                  )}
                 {validAdapter && adapterType === "paperclip_runner" && (
                   <label className="flex flex-col gap-2 text-sm font-medium">
                     Runner

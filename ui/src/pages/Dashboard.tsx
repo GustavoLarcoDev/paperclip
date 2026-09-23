@@ -28,7 +28,7 @@ import { ActivityRow } from "../components/ActivityRow";
 import { timeAgo } from "../lib/timeAgo";
 import { cn, formatCents } from "../lib/utils";
 import { SHOW_TASK_PRIORITY_UI } from "../lib/ui-flags";
-import { Bot, CircleDot, DollarSign, ShieldCheck, LayoutDashboard, PauseCircle } from "lucide-react";
+import { Bot, CircleDot, DollarSign, ShieldCheck, LayoutDashboard, PauseCircle, SquarePen } from "lucide-react";
 import { ActiveAgentsPanel } from "../components/ActiveAgentsPanel";
 import { ChartCard, RunActivityChart, PriorityChart, IssueStatusChart, SuccessRateChart } from "../components/ActivityCharts";
 import { PageSkeleton } from "../components/PageSkeleton";
@@ -72,7 +72,7 @@ export function derivePausedAgentBanner(agents: Agent[] | undefined): PausedAgen
 
 export function Dashboard() {
   const { selectedCompanyId, companies } = useCompany();
-  const { openOnboarding } = useDialogActions();
+  const { openOnboarding, openNewIssue } = useDialogActions();
   const location = useLocation();
   const { setBreadcrumbs } = useBreadcrumbs();
   const [animatedActivityIds, setAnimatedActivityIds] = useState<Set<string>>(new Set());
@@ -508,8 +508,12 @@ export function Dashboard() {
                 Recent Tasks
               </h3>
               {recentIssues.length === 0 ? (
-                <Card className="block p-4">
-                  <p className="text-sm text-muted-foreground">No tasks yet.</p>
+                <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
+                  <p className="text-sm text-muted-foreground">No tasks yet. Create one to give your agents work.</p>
+                  <Button size="sm" variant="outline" onClick={() => openNewIssue()}>
+                    <SquarePen className="h-4 w-4" />
+                    New Task
+                  </Button>
                 </Card>
               ) : (
                 <Card className="@container block py-0 divide-y divide-border overflow-hidden">
