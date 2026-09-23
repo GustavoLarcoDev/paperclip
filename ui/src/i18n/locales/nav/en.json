@@ -1,0 +1,240 @@
+{
+  "nav": {
+    "common": {
+      "openActions": "Open actions for {{name}}",
+      "leaving": "Leaving...",
+      "removeFromStarred": "Remove from starred",
+      "leaveProject": "Leave project",
+      "projectPausedByBudget": "Project paused by budget",
+      "signingOut": "Signing out...",
+      "signOut": "Sign out"
+    },
+    "sidebar": {
+      "newTask": "New Task",
+      "search": "Search",
+      "dashboard": "Dashboard",
+      "inbox": "Inbox",
+      "unreadBadge": "unread",
+      "decisions": "Decisions",
+      "decisionsBadge": "decisions",
+      "status": "Status",
+      "conferenceRoom": "Conference Room",
+      "betaBadge": "beta",
+      "work": "Work",
+      "org": "Org",
+      "organization": "Organization",
+      "tasks": "Tasks",
+      "projects": "Projects",
+      "routines": "Routines",
+      "artifacts": "Artifacts",
+      "cases": "Cases",
+      "pipelines": "Pipelines",
+      "goals": "Goals",
+      "workspaces": "Workspaces",
+      "agents": "Agents",
+      "skills": "Skills",
+      "connectors": "Connectors",
+      "audit": "Audit",
+      "costs": "Costs",
+      "settings": "Settings",
+      "orgChart": "Org",
+      "timeline": "Timeline",
+      "activity": "Activity"
+    },
+    "navItem": {
+      "live": "{{count}} live",
+      "badgeWithLabel": "{{count}} {{label}}",
+      "attentionNeeded": "attention needed"
+    },
+    "section": {
+      "actions": "{{label}} actions",
+      "collapse": "Collapse {{label}}",
+      "expand": "Expand {{label}}"
+    },
+    "sort": {
+      "top": "Top",
+      "alphabetical": "Alphabetical",
+      "recent": "Recent"
+    },
+    "agents": {
+      "section": "Agents",
+      "newAgent": "New agent",
+      "sectionActions": "Agents section actions",
+      "browse": "Browse agents",
+      "sortLabel": "Agent sort",
+      "seeAll": "See all agents",
+      "resumeAgent": "Resume agent",
+      "pauseAgent": "Pause agent",
+      "updating": "Updating...",
+      "budgetPaused": "Budget paused",
+      "invalidOrgChain": "Invalid org chain",
+      "invalidReportingChain": "Invalid reporting chain",
+      "builtInNeedsSetup": "Built-in agent needs setup",
+      "builtInPendingApproval": "Built-in agent pending approval",
+      "pausedByBudget": "Agent paused by budget",
+      "pausedByBudgetLimits": "Agent was paused by budget limits",
+      "starAgent": "Star agent",
+      "editAgent": "Edit agent",
+      "leaveAgent": "Leave agent",
+      "toastPaused": "Agent paused",
+      "toastResumed": "Agent resumed",
+      "pauseFailed": "Could not pause agent",
+      "resumeFailed": "Could not resume agent"
+    },
+    "projects": {
+      "section": "Projects",
+      "newProject": "New project",
+      "sectionActions": "Projects section actions",
+      "browse": "Browse projects",
+      "sortLabel": "Project sort"
+    },
+    "starredProjects": {
+      "ariaLabel": "Starred projects"
+    },
+    "recentTasks": {
+      "section": "Recent Tasks",
+      "idle": "Idle",
+      "moreActions": "More actions for {{title}}",
+      "rename": "Rename",
+      "archive": "Archive",
+      "pauseRestart": "Pause/Restart",
+      "renameTitle": "Rename task",
+      "renameDescription": "Choose a short, clear name for this task.",
+      "taskName": "Task name",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "renamed": "Task renamed",
+      "renameFailed": "Task rename failed",
+      "renameFailedBody": "Unable to rename this task.",
+      "archived": "Task archived from inbox",
+      "archiveFailed": "Task archive failed",
+      "archiveFailedBody": "Unable to archive this task from the inbox.",
+      "restarted": "Task restarted",
+      "paused": "Task paused",
+      "wakeSkipped": "The assignee wake was skipped.",
+      "pausedByParent": "This task is paused by a parent task. Restart it from the pause root.",
+      "pauseFailed": "Task pause update failed",
+      "pauseFailedBody": "Unable to pause or restart this task."
+    },
+    "shell": {
+      "resize": "Resize sidebar"
+    },
+    "agentChats": {
+      "fallbackAgentName": "Agent"
+    },
+    "serverInfo": {
+      "heading": "Server",
+      "lastRestarted": "Last restarted",
+      "runningCommit": "Running commit",
+      "checkoutState": "Checkout state",
+      "unavailable": "Unavailable",
+      "commitUnavailable": "Commit unavailable",
+      "changeStatusUnavailable": "Change status unavailable",
+      "cleanCheckout": "Clean checkout",
+      "staged": "{{count}} staged",
+      "unstaged": "{{count}} unstaged",
+      "untracked": "{{count}} untracked",
+      "localChangesWithParts": "Local changes present ({{parts}})",
+      "localChanges": "Local changes present",
+      "healthUnavailable": "Health unavailable",
+      "loading": "Loading..."
+    },
+    "accountMenu": {
+      "boardFallback": "Board",
+      "signedIn": "Signed in",
+      "localBoard": "Local workspace board",
+      "openMenu": "Open account menu",
+      "settings": "Settings",
+      "viewProfile": "View profile",
+      "editProfile": "Edit profile",
+      "documentation": "Documentation",
+      "keyboardShortcuts": "Keyboard shortcuts",
+      "shareFeedback": "Share feedback"
+    },
+    "companyMenu": {
+      "reorder": "Reorder {{name}}",
+      "openSwitcherNamed": "Open {{name}} organization switcher",
+      "openSwitcher": "Open organization switcher",
+      "selectOrganization": "Select organization",
+      "organizations": "Organizations",
+      "done": "Done",
+      "edit": "Edit",
+      "loadingOrganizations": "Loading organizations...",
+      "couldNotLoad": "Could not load organizations",
+      "couldntLoad": "Couldn't load organizations",
+      "noOrganizations": "No organizations",
+      "tryAgain": "Try again",
+      "createOrganization": "Create organization",
+      "invitePeopleTo": "Invite people to {{name}}",
+      "invitePeople": "Invite people"
+    },
+    "layout": {
+      "skipToMain": "Skip to Main Content",
+      "closeSidebar": "Close sidebar",
+      "archivedTitle": "{{name}} is archived",
+      "archivedBody": "Switched to {{name}}."
+    },
+    "commandPalette": {
+      "placeholder": "Search tasks, agents, projects...",
+      "noQuickMatches": "No quick task matches. Press {{enterKey}} to {{action}} or keep typing to refine.",
+      "searchAllAction": "search all",
+      "noResults": "No results found.",
+      "searchAllFor": "Search all for {{query}}",
+      "openFullSearch": "open full search",
+      "createTask": "Create new task",
+      "openFileInIssue": "Open file in this issue...",
+      "createAgent": "Create new agent",
+      "createProject": "Create new project",
+      "groups": {
+        "search": "Search",
+        "quickFilters": "Quick filters",
+        "projects": "Projects",
+        "actions": "Actions",
+        "pages": "Pages",
+        "tasks": "Tasks",
+        "agents": "Agents"
+      }
+    },
+    "mobileNav": {
+      "ariaLabel": "Mobile navigation",
+      "home": "Home"
+    },
+    "breadcrumbBar": {
+      "openSidebar": "Open sidebar",
+      "hideProperties": "Hide properties",
+      "showProperties": "Show properties"
+    },
+    "shortcuts": {
+      "title": "Keyboard shortcuts",
+      "then": "then",
+      "footer": "Press {{escKey}} to close · Shortcuts are disabled in text fields",
+      "sections": {
+        "inbox": "Inbox",
+        "taskDetail": "Task detail",
+        "decisions": "Decisions",
+        "global": "Global"
+      },
+      "labels": {
+        "moveDown": "Move down",
+        "moveUp": "Move up",
+        "collapseGroup": "Collapse selected group",
+        "expandGroup": "Expand selected group",
+        "openItem": "Open selected item",
+        "archiveItem": "Archive item",
+        "markRead": "Mark as read",
+        "markUnread": "Mark as unread",
+        "quickArchive": "Quick-archive back to inbox",
+        "goToInbox": "Go to inbox",
+        "focusComposer": "Focus comment composer",
+        "toggleDecision": "Open or close selected decision",
+        "dismissDecision": "Dismiss selected decision",
+        "searchPage": "Search current page or quick search",
+        "newTask": "New task",
+        "toggleSidebar": "Toggle sidebar",
+        "togglePanel": "Toggle panel",
+        "showShortcuts": "Show keyboard shortcuts"
+      }
+    }
+  }
+}

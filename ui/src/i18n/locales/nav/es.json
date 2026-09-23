@@ -1,0 +1,240 @@
+{
+  "nav": {
+    "common": {
+      "openActions": "Abrir acciones de {{name}}",
+      "leaving": "Saliendo...",
+      "removeFromStarred": "Quitar de destacados",
+      "leaveProject": "Salir del proyecto",
+      "projectPausedByBudget": "Proyecto pausado por presupuesto",
+      "signingOut": "Cerrando sesión...",
+      "signOut": "Cerrar sesión"
+    },
+    "sidebar": {
+      "newTask": "Nueva tarea",
+      "search": "Buscar",
+      "dashboard": "Panel",
+      "inbox": "Bandeja de entrada",
+      "unreadBadge": "sin leer",
+      "decisions": "Decisiones",
+      "decisionsBadge": "decisiones",
+      "status": "Estado",
+      "conferenceRoom": "Sala de reuniones",
+      "betaBadge": "beta",
+      "work": "Trabajo",
+      "org": "Organización",
+      "organization": "Organización",
+      "tasks": "Tareas",
+      "projects": "Proyectos",
+      "routines": "Rutinas",
+      "artifacts": "Artefactos",
+      "cases": "Casos",
+      "pipelines": "Pipelines",
+      "goals": "Objetivos",
+      "workspaces": "Espacios de trabajo",
+      "agents": "Agentes",
+      "skills": "Habilidades",
+      "connectors": "Conectores",
+      "audit": "Auditoría",
+      "costs": "Costos",
+      "settings": "Ajustes",
+      "orgChart": "Organigrama",
+      "timeline": "Cronología",
+      "activity": "Actividad"
+    },
+    "navItem": {
+      "live": "{{count}} en vivo",
+      "badgeWithLabel": "{{count}} {{label}}",
+      "attentionNeeded": "requiere atención"
+    },
+    "section": {
+      "actions": "Acciones de {{label}}",
+      "collapse": "Contraer {{label}}",
+      "expand": "Expandir {{label}}"
+    },
+    "sort": {
+      "top": "Principales",
+      "alphabetical": "Alfabético",
+      "recent": "Recientes"
+    },
+    "agents": {
+      "section": "Agentes",
+      "newAgent": "Nuevo agente",
+      "sectionActions": "Acciones de la sección Agentes",
+      "browse": "Ver agentes",
+      "sortLabel": "Orden de agentes",
+      "seeAll": "Ver todos los agentes",
+      "resumeAgent": "Reanudar agente",
+      "pauseAgent": "Pausar agente",
+      "updating": "Actualizando...",
+      "budgetPaused": "Pausado por presupuesto",
+      "invalidOrgChain": "Cadena organizativa no válida",
+      "invalidReportingChain": "Cadena de mando no válida",
+      "builtInNeedsSetup": "Agente integrado: requiere configuración",
+      "builtInPendingApproval": "Agente integrado: pendiente de aprobación",
+      "pausedByBudget": "Agente pausado por presupuesto",
+      "pausedByBudgetLimits": "El agente se pausó por límites de presupuesto",
+      "starAgent": "Destacar agente",
+      "editAgent": "Editar agente",
+      "leaveAgent": "Salir del agente",
+      "toastPaused": "Agente pausado",
+      "toastResumed": "Agente reanudado",
+      "pauseFailed": "No se pudo pausar el agente",
+      "resumeFailed": "No se pudo reanudar el agente"
+    },
+    "projects": {
+      "section": "Proyectos",
+      "newProject": "Nuevo proyecto",
+      "sectionActions": "Acciones de la sección Proyectos",
+      "browse": "Ver proyectos",
+      "sortLabel": "Orden de proyectos"
+    },
+    "starredProjects": {
+      "ariaLabel": "Proyectos destacados"
+    },
+    "recentTasks": {
+      "section": "Tareas recientes",
+      "idle": "Inactiva",
+      "moreActions": "Más acciones para {{title}}",
+      "rename": "Cambiar nombre",
+      "archive": "Archivar",
+      "pauseRestart": "Pausar/reiniciar",
+      "renameTitle": "Cambiar nombre de la tarea",
+      "renameDescription": "Elige un nombre corto y claro para esta tarea.",
+      "taskName": "Nombre de la tarea",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "renamed": "Nombre de la tarea actualizado",
+      "renameFailed": "No se pudo cambiar el nombre de la tarea",
+      "renameFailedBody": "No se pudo cambiar el nombre de esta tarea.",
+      "archived": "Tarea archivada de la bandeja de entrada",
+      "archiveFailed": "No se pudo archivar la tarea",
+      "archiveFailedBody": "No se pudo archivar esta tarea de la bandeja de entrada.",
+      "restarted": "Tarea reiniciada",
+      "paused": "Tarea pausada",
+      "wakeSkipped": "Se omitió la activación del responsable.",
+      "pausedByParent": "Esta tarea está pausada por una tarea superior. Reiníciala desde la tarea donde empezó la pausa.",
+      "pauseFailed": "No se pudo actualizar la pausa de la tarea",
+      "pauseFailedBody": "No se pudo pausar ni reiniciar esta tarea."
+    },
+    "shell": {
+      "resize": "Cambiar el ancho de la barra lateral"
+    },
+    "agentChats": {
+      "fallbackAgentName": "Agente"
+    },
+    "serverInfo": {
+      "heading": "Servidor",
+      "lastRestarted": "Último reinicio",
+      "runningCommit": "Commit en ejecución",
+      "checkoutState": "Estado de la copia de trabajo",
+      "unavailable": "No disponible",
+      "commitUnavailable": "Commit no disponible",
+      "changeStatusUnavailable": "Estado de los cambios no disponible",
+      "cleanCheckout": "Sin cambios locales",
+      "staged": "{{count}} preparados",
+      "unstaged": "{{count}} sin preparar",
+      "untracked": "{{count}} sin seguimiento",
+      "localChangesWithParts": "Hay cambios locales ({{parts}})",
+      "localChanges": "Hay cambios locales",
+      "healthUnavailable": "Estado del servidor no disponible",
+      "loading": "Cargando..."
+    },
+    "accountMenu": {
+      "boardFallback": "Directorio",
+      "signedIn": "Sesión iniciada",
+      "localBoard": "Directorio del espacio de trabajo local",
+      "openMenu": "Abrir menú de la cuenta",
+      "settings": "Ajustes",
+      "viewProfile": "Ver perfil",
+      "editProfile": "Editar perfil",
+      "documentation": "Documentación",
+      "keyboardShortcuts": "Atajos de teclado",
+      "shareFeedback": "Enviar comentarios"
+    },
+    "companyMenu": {
+      "reorder": "Reordenar {{name}}",
+      "openSwitcherNamed": "Abrir el selector de organización ({{name}})",
+      "openSwitcher": "Abrir el selector de organización",
+      "selectOrganization": "Selecciona una organización",
+      "organizations": "Organizaciones",
+      "done": "Listo",
+      "edit": "Editar",
+      "loadingOrganizations": "Cargando organizaciones...",
+      "couldNotLoad": "No se pudieron cargar las organizaciones",
+      "couldntLoad": "No se pudieron cargar las organizaciones",
+      "noOrganizations": "No hay organizaciones",
+      "tryAgain": "Reintentar",
+      "createOrganization": "Crear organización",
+      "invitePeopleTo": "Invitar personas a {{name}}",
+      "invitePeople": "Invitar personas"
+    },
+    "layout": {
+      "skipToMain": "Saltar al contenido principal",
+      "closeSidebar": "Cerrar barra lateral",
+      "archivedTitle": "{{name}} está archivada",
+      "archivedBody": "Se cambió a {{name}}."
+    },
+    "commandPalette": {
+      "placeholder": "Buscar tareas, agentes, proyectos...",
+      "noQuickMatches": "No hay coincidencias rápidas de tareas. Presiona {{enterKey}} para {{action}} o sigue escribiendo para afinar.",
+      "searchAllAction": "buscar en todo",
+      "noResults": "No se encontraron resultados.",
+      "searchAllFor": "Buscar {{query}} en todo",
+      "openFullSearch": "abrir búsqueda completa",
+      "createTask": "Crear nueva tarea",
+      "openFileInIssue": "Abrir un archivo de esta tarea...",
+      "createAgent": "Crear nuevo agente",
+      "createProject": "Crear nuevo proyecto",
+      "groups": {
+        "search": "Búsqueda",
+        "quickFilters": "Filtros rápidos",
+        "projects": "Proyectos",
+        "actions": "Acciones",
+        "pages": "Páginas",
+        "tasks": "Tareas",
+        "agents": "Agentes"
+      }
+    },
+    "mobileNav": {
+      "ariaLabel": "Navegación móvil",
+      "home": "Inicio"
+    },
+    "breadcrumbBar": {
+      "openSidebar": "Abrir barra lateral",
+      "hideProperties": "Ocultar propiedades",
+      "showProperties": "Mostrar propiedades"
+    },
+    "shortcuts": {
+      "title": "Atajos de teclado",
+      "then": "luego",
+      "footer": "Presiona {{escKey}} para cerrar · Los atajos no funcionan en los campos de texto",
+      "sections": {
+        "inbox": "Bandeja de entrada",
+        "taskDetail": "Detalle de la tarea",
+        "decisions": "Decisiones",
+        "global": "Global"
+      },
+      "labels": {
+        "moveDown": "Bajar",
+        "moveUp": "Subir",
+        "collapseGroup": "Contraer el grupo seleccionado",
+        "expandGroup": "Expandir el grupo seleccionado",
+        "openItem": "Abrir el elemento seleccionado",
+        "archiveItem": "Archivar elemento",
+        "markRead": "Marcar como leído",
+        "markUnread": "Marcar como no leído",
+        "quickArchive": "Archivar y volver a la bandeja de entrada",
+        "goToInbox": "Ir a la bandeja de entrada",
+        "focusComposer": "Ir al editor de comentarios",
+        "toggleDecision": "Abrir o cerrar la decisión seleccionada",
+        "dismissDecision": "Descartar la decisión seleccionada",
+        "searchPage": "Buscar en la página actual o búsqueda rápida",
+        "newTask": "Nueva tarea",
+        "toggleSidebar": "Mostrar u ocultar la barra lateral",
+        "togglePanel": "Mostrar u ocultar el panel",
+        "showShortcuts": "Mostrar atajos de teclado"
+      }
+    }
+  }
+}

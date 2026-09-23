@@ -46,6 +46,7 @@ import { useSidebar } from "../context/SidebarContext";
 import { CompanyPatternIcon } from "./CompanyPatternIcon";
 
 import { PluginOrganizationSwitcher } from "./PluginOrganizationSwitcher";
+import { useTranslation } from "@/i18n";
 
 interface SidebarCompanyMenuProps {
   open?: boolean;
@@ -148,6 +149,7 @@ function SortableCompanyItem({
   isSelected: boolean;
   onSelect: (company: Company) => void;
 }) {
+  const { t } = useTranslation();
   const {
     attributes,
     listeners,
@@ -194,7 +196,7 @@ function SortableCompanyItem({
         <button
           type="button"
           ref={setActivatorNodeRef}
-          aria-label={`Reorder ${company.name}`}
+          aria-label={t("nav.companyMenu.reorder", { name: company.name })}
           className="inline-flex size-8 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-(length:--rad-2) focus-visible:ring-ring"
           onClick={(event) => {
             event.preventDefault();
@@ -223,6 +225,7 @@ export function SidebarCompanyMenu(props: SidebarCompanyMenuProps = {}) {
 }
 
 function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompanyMenuProps) {
+  const { t } = useTranslation();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isEditingOrder, setIsEditingOrder] = useState(false);
   const { companies, selectedCompany, setSelectedCompanyId, companyListUnavailable, retryCompanies } =
@@ -285,7 +288,6 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
       ?? null
     : null;
   const createStackUrl = isCloud ? cloudStackCreateUrl(cloudBaseUrl) : null;
-  const switcherNoun = "organization";
   // The one name the chrome shows for "where am I": the stack in cloud, the
   // company when self-hosted.
   const currentName = isCloud
@@ -382,8 +384,8 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
           className="h-9 min-w-0 flex-1 justify-start gap-2 px-4 text-left hover:bg-sidebar-accent hover:text-sidebar-accent-foreground has-[>svg]:px-4 dark:hover:bg-sidebar-accent dark:hover:text-sidebar-accent-foreground"
           aria-label={
             currentName
-              ? `Open ${currentName} ${switcherNoun} switcher`
-              : `Open ${switcherNoun} switcher`
+              ? t("nav.companyMenu.openSwitcherNamed", { name: currentName })
+              : t("nav.companyMenu.openSwitcher")
           }
         >
           <span className="flex min-w-0 flex-1 items-center gap-2">
@@ -401,7 +403,7 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
               )}
               title={currentName ?? undefined}
             >
-              {currentName ?? `Select ${switcherNoun}`}
+              {currentName ?? t("nav.companyMenu.selectOrganization")}
             </span>
           </span>
           {!rail && <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />}
@@ -414,7 +416,7 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
       >
         <div className="flex h-(--organization-popover-header-height) items-center justify-between gap-2 px-3.5">
           <DropdownMenuLabel className="p-0 text-(length:--text-compact) font-semibold text-foreground">
-            Organizations
+            {t("nav.companyMenu.organizations")}
           </DropdownMenuLabel>
           {/* Stack order is owned by cloud's own portfolio in v1, so the
               drag-to-reorder affordance stays self-hosted-only. */}
@@ -428,7 +430,7 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
               }}
               className="rounded px-1.5 py-0.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
-              {isEditingOrder ? "Done" : "Edit"}
+              {isEditingOrder ? t("nav.companyMenu.done") : t("nav.companyMenu.edit")}
             </button>
           )}
         </div>
@@ -446,10 +448,10 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
               {stacks.length === 0 ? (
                 <DropdownMenuItem disabled>
                   {stacksQuery.isLoading
-                    ? "Loading organizations..."
+                    ? t("nav.companyMenu.loadingOrganizations")
                     : stacksQuery.isError
-                      ? "Could not load organizations"
-                      : "No organizations"}
+                      ? t("nav.companyMenu.couldNotLoad")
+                      : t("nav.companyMenu.noOrganizations")}
                 </DropdownMenuItem>
               ) : null}
             </>
@@ -482,7 +484,7 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
                 // offer the way back.
                 companyListUnavailable ? (
                   <>
-                    <DropdownMenuItem disabled>Couldn&apos;t load organizations</DropdownMenuItem>
+                    <DropdownMenuItem disabled>{t("nav.companyMenu.couldntLoad")}</DropdownMenuItem>
                     <DropdownMenuItem
                       onSelect={(event) => {
                         // Keep the menu open so the result of the retry is visible.
@@ -491,11 +493,11 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
                       }}
                     >
                       <RefreshCw className="h-4 w-4 mr-2" />
-                      Try again
+                      {t("nav.companyMenu.tryAgain")}
                     </DropdownMenuItem>
                   </>
                 ) : (
-                  <DropdownMenuItem disabled>No organizations</DropdownMenuItem>
+                  <DropdownMenuItem disabled>{t("nav.companyMenu.noOrganizations")}</DropdownMenuItem>
                 )
               ) : null}
             </>
@@ -513,7 +515,7 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
               <span className="flex size-5 shrink-0 items-center justify-center text-muted-foreground">
                 <Plus className="size-4" />
               </span>
-              <span className="min-w-0 flex-1 truncate">Create organization</span>
+              <span className="min-w-0 flex-1 truncate">{t("nav.companyMenu.createOrganization")}</span>
             </DropdownMenuItem>
           )}
           {showInvitePeople ? (
@@ -532,7 +534,7 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
                   <UserPlus className="size-4" />
                 </span>
                 <span className="min-w-0 flex-1 truncate">
-                  {currentName ? `Invite people to ${currentName}` : "Invite people"}
+                  {currentName ? t("nav.companyMenu.invitePeopleTo", { name: currentName }) : t("nav.companyMenu.invitePeople")}
                 </span>
               </Link>
             </DropdownMenuItem>
@@ -547,7 +549,7 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
                 <LogOut className="size-4" />
               </span>
               <span className="min-w-0 flex-1 truncate">
-                {signOutMutation.isPending ? "Signing out..." : "Sign out"}
+                {signOutMutation.isPending ? t("nav.common.signingOut") : t("nav.common.signOut")}
               </span>
             </DropdownMenuItem>
           ) : null}
