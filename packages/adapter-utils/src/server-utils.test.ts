@@ -1289,6 +1289,47 @@ describe("renderPaperclipWakePrompt", () => {
     });
   });
 
+  it("renders the company response-language directive only when the payload sets it", () => {
+    const payload = {
+      reason: "issue_commented",
+      issue: {
+        id: "issue-1",
+        identifier: "PAP-1",
+        title: "Response language",
+        description: null,
+        descriptionTruncated: false,
+        status: "in_progress",
+      },
+      commentWindow: { requestedCount: 0, includedCount: 0, missingCount: 0 },
+      comments: [],
+      fallbackFetchNeeded: false,
+    };
+
+    expect(renderPaperclipWakePrompt(payload)).not.toContain("response language");
+    expect(
+      renderPaperclipWakePrompt({ ...payload, responseLanguage: null }),
+    ).not.toContain("response language");
+    expect(
+      renderPaperclipWakePrompt({ ...payload, responseLanguage: "not a language!" }),
+    ).not.toContain("response language");
+
+    const enabled = { ...payload, responseLanguage: "es" };
+    const fresh = renderPaperclipWakePrompt(enabled);
+    expect(fresh).toContain("- response language: Write all user-facing output");
+    expect(fresh).toContain("in Spanish (es)");
+    expect(fresh).toContain("Keep code, identifiers, commands, file paths");
+    // Resume deltas carry it too: the company setting can change between wakes.
+    expect(
+      renderPaperclipWakePrompt(enabled, { resumedSession: true }),
+    ).toContain("in Spanish (es)");
+    expect(
+      renderPaperclipWakePrompt({ ...payload, responseLanguage: "pt-br" }),
+    ).toContain("in Brazilian Portuguese (pt-BR)");
+    expect(
+      JSON.parse(stringifyPaperclipWakePayload(enabled) ?? "{}"),
+    ).toMatchObject({ responseLanguage: "es" });
+  });
+
   it("suppresses the issue description when the prompt already carries the task-context markdown", () => {
     const payload = {
       reason: "issue_assigned",

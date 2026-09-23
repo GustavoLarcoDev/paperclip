@@ -14,7 +14,7 @@ import { applyConnectorSkills, prepareConnectorSkillDelivery, resolveConnectorAs
 import { admitExplicitNativeContinuation, undeliveredLegacyUserCommentIds } from "./explicit-native-continuation.js";
 import { connectionIntentService } from "./connection-intents.js";
 import { managedAiSessionFingerprintConfig, prepareManagedAiRuntime, assertManagedAiProjectAuth, stripAiAuthBindings, isAiConnectionBusy, AI_AUTH_ENV_KEYS } from "./ai-connection-runtime.js";
-import { aiConnectionBindingSchema } from "@paperclipai/shared";
+import { aiConnectionBindingSchema, canonicalizeAgentResponseLanguage } from "@paperclipai/shared";
 import { executionBlockerPredicate, getExecutionBlocker } from "./execution-blocker.js";
 import { CONVERSATION_CONTINUATION_POLICY, claimedAdapterType, runUsedConversationAdapter, hasConversationContinuationPolicy, isConversationAdapter } from "./conversation-continuation.js";
 import { recordExecutionWait } from "./execution-wait.js";
@@ -7679,6 +7679,10 @@ export async function buildPaperclipWakePayload(input: {
   // Experimental: agents write user-interaction content in ASD-STE100
   // Simplified Technical English (rendered as a prompt directive downstream).
   simplifiedEnglishInteractions?: boolean;
+  // Company preference (companies.agent_response_language): BCP-47 tag for the
+  // language agents write user-facing output in. Rendered by every adapter via
+  // renderPaperclipWakePrompt.
+  responseLanguage?: string | null;
 }) {
   const executionStage = parseObject(input.contextSnapshot.executionStage);
   const commentIds = extractWakeCommentIds(input.contextSnapshot);
@@ -8182,6 +8186,7 @@ export async function buildPaperclipWakePayload(input: {
       input.contextSnapshot[PAPERCLIP_EXTERNAL_CHAT_EXECUTION_BOUND_KEY] ===
       true,
     simplifiedEnglishInteractions: input.simplifiedEnglishInteractions === true,
+    responseLanguage: canonicalizeAgentResponseLanguage(input.responseLanguage),
     dependencyBlockedInteraction:
       input.contextSnapshot.dependencyBlockedInteraction === true,
     treeHoldInteraction: input.contextSnapshot.treeHoldInteraction === true,
@@ -20751,6 +20756,11 @@ export function heartbeatService(
         simplifiedEnglishInteractions:
           experimentalInstanceSettings.enableSimplifiedEnglishInteractions ===
           true,
+        responseLanguage: await db
+          .select({ agentResponseLanguage: companies.agentResponseLanguage })
+          .from(companies)
+          .where(eq(companies.id, agent.companyId))
+          .then((rows) => rows[0]?.agentResponseLanguage ?? null),
       });
       if (paperclipWakePayload) {
         context[PAPERCLIP_WAKE_PAYLOAD_KEY] = paperclipWakePayload;

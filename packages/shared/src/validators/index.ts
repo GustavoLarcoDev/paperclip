@@ -74,6 +74,7 @@ export {
 } from "./smoke-lab.js";
 
 export {
+  agentResponseLanguageSchema,
   createCompanySchema,
   interactionResolverGovernanceSchema,
   updateCompanySchema,

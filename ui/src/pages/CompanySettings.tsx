@@ -2,6 +2,8 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  AGENT_RESPONSE_LANGUAGE_OPTIONS,
+  describeAgentResponseLanguage,
   type InteractionResolverGovernance,
   type IssueThreadInteractionKind,
 } from "@paperclipai/shared";
@@ -16,6 +18,13 @@ import { companiesApi } from "../api/companies";
 import { assetsApi } from "../api/assets";
 import { queryKeys } from "../lib/queryKeys";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SlidersHorizontal } from "lucide-react";
 import {
   InteractionGovernancePanel,
@@ -29,6 +38,9 @@ import {
   ToggleField,
 } from "../components/agent-config-primitives";
 import { InstanceGeneralSettings } from "./InstanceGeneralSettings";
+
+// Radix Select disallows empty-string item values; this sentinel maps to null.
+const AGENT_RESPONSE_LANGUAGE_UNSET = "__none__";
 
 export function CompanySettings() {
   const {
@@ -81,6 +93,14 @@ export function CompanySettings() {
       companiesApi.update(selectedCompanyId!, {
         requireBoardApprovalForNewAgents: requireApproval
       }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.companies.all });
+    }
+  });
+
+  const responseLanguageMutation = useMutation({
+    mutationFn: (agentResponseLanguage: string | null) =>
+      companiesApi.update(selectedCompanyId!, { agentResponseLanguage }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.companies.all });
     }
@@ -352,6 +372,68 @@ export function CompanySettings() {
             toggleTestId="company-settings-team-approval-toggle"
           />
         </div>
+      </div>
+
+      {/* Agent response language */}
+      <div className="max-w-2xl space-y-4" data-testid="company-settings-agent-language-section">
+        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          Agent language
+        </div>
+        <Field
+          label="Agent response language"
+          hint="Agents write comments, documents, issues and messages in this language. Code, commands and file paths stay unchanged."
+        >
+          {(() => {
+            const current = selectedCompany.agentResponseLanguage ?? null;
+            const options: { code: string; label: string }[] = [
+              ...AGENT_RESPONSE_LANGUAGE_OPTIONS,
+            ];
+            // Keep a tag set through the API selectable even if it is not in the short list.
+            if (current && !options.some((option) => option.code === current)) {
+              options.push({ code: current, label: describeAgentResponseLanguage(current) });
+            }
+            const value = current ?? AGENT_RESPONSE_LANGUAGE_UNSET;
+            const selectedLabel =
+              options.find((option) => option.code === current)?.label ?? "No preference";
+            return (
+              <div className="flex items-center gap-2">
+                <Select
+                  value={value}
+                  onValueChange={(next) =>
+                    responseLanguageMutation.mutate(
+                      next === AGENT_RESPONSE_LANGUAGE_UNSET ? null : next,
+                    )
+                  }
+                  disabled={responseLanguageMutation.isPending}
+                >
+                  <SelectTrigger
+                    size="sm"
+                    aria-label="Agent response language"
+                    className="w-full min-w-0 text-xs sm:w-(--sz-208px)"
+                    data-testid="company-settings-agent-language-select"
+                  >
+                    <SelectValue>{selectedLabel}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={AGENT_RESPONSE_LANGUAGE_UNSET}>No preference</SelectItem>
+                    {options.map((option) => (
+                      <SelectItem key={option.code} value={option.code}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {responseLanguageMutation.isError && (
+                  <span className="text-xs text-destructive">
+                    {responseLanguageMutation.error instanceof Error
+                      ? responseLanguageMutation.error.message
+                      : "Failed to save"}
+                  </span>
+                )}
+              </div>
+            );
+          })()}
+        </Field>
       </div>
 
       {/* Interaction governance */}

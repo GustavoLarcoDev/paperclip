@@ -32,6 +32,8 @@ export interface Company {
   feedbackDataSharingConsentAt: Date | null;
   feedbackDataSharingConsentByUserId: string | null;
   feedbackDataSharingTermsVersion: string | null;
+  /** BCP-47 tag agents write user-facing output in; null = no preference. */
+  agentResponseLanguage: string | null;
   logoAssetId: string | null;
   logoUrl: string | null;
   createdAt: Date;

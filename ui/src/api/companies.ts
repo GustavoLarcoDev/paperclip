@@ -110,6 +110,7 @@ export const companiesApi = {
         | "interactionResolverGovernance"
         | "feedbackDataSharingEnabled"
         | "logoAssetId"
+        | "agentResponseLanguage"
       >
     >,
   ) => api.patch<Company>(`/companies/${companyId}`, data),

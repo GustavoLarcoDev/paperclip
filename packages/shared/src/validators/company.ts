@@ -4,8 +4,33 @@ import {
   ISSUE_THREAD_INTERACTION_RESOLVER_POLICIES,
 } from "../constants.js";
 import { objectWithoutDefaults } from "./partial.js";
+import {
+  AGENT_RESPONSE_LANGUAGE_MAX_LENGTH,
+  canonicalizeAgentResponseLanguage,
+} from "../agent-response-language.js";
 
 const logoAssetIdSchema = z.string().guid().nullable().optional();
+// BCP-47 language tag (canonicalized, e.g. "pt-br" -> "pt-BR"); null or ""
+// clears the preference.
+export const agentResponseLanguageSchema = z
+  .string()
+  .trim()
+  .max(AGENT_RESPONSE_LANGUAGE_MAX_LENGTH)
+  .transform((value, ctx) => {
+    if (value.length === 0) return null;
+    const canonical = canonicalizeAgentResponseLanguage(value);
+    if (!canonical) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Must be a valid BCP-47 language tag (for example \"es\" or \"pt-BR\")",
+      });
+      return z.NEVER;
+    }
+    return canonical;
+  })
+  .nullable()
+  .optional();
+
 const feedbackDataSharingTermsVersionSchema = z.string().min(1).nullable().optional();
 
 const interactionResolverKindGovernanceSchema = z.object({
@@ -43,6 +68,7 @@ export const updateCompanySchema = objectWithoutDefaults(
       feedbackDataSharingConsentByUserId: z.string().min(1).nullable().optional(),
       feedbackDataSharingTermsVersion: feedbackDataSharingTermsVersionSchema,
       logoAssetId: logoAssetIdSchema,
+      agentResponseLanguage: agentResponseLanguageSchema,
     }),
 );
 

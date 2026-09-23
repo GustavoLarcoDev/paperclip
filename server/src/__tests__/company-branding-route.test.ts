@@ -370,4 +370,80 @@ describe("PATCH /api/companies/:companyId", () => {
       actorId: "user-1",
     }));
   });
+
+  it("lets board callers set, canonicalize, and clear the agent response language", async () => {
+    const company = createCompany();
+    mockCompanyService.getById.mockResolvedValue(company);
+    mockCompanyService.update.mockImplementation(async (_id: string, patch: Record<string, unknown>) => ({
+      ...company,
+      agentResponseLanguage: patch.agentResponseLanguage ?? null,
+    }));
+    const app = await createApp({
+      type: "board",
+      userId: "user-1",
+      source: "local_implicit",
+    });
+
+    const set = await request(app)
+      .patch("/api/companies/company-1")
+      .send({ agentResponseLanguage: "pt-br" });
+    expect(set.status).toBe(200);
+    expect(set.body.agentResponseLanguage).toBe("pt-BR");
+    expect(mockCompanyService.update).toHaveBeenLastCalledWith(
+      "company-1",
+      { agentResponseLanguage: "pt-BR" },
+      expect.objectContaining({ actorType: "user" }),
+    );
+
+    const cleared = await request(app)
+      .patch("/api/companies/company-1")
+      .send({ agentResponseLanguage: null });
+    expect(cleared.status).toBe(200);
+    expect(cleared.body.agentResponseLanguage).toBeNull();
+    expect(mockCompanyService.update).toHaveBeenLastCalledWith(
+      "company-1",
+      { agentResponseLanguage: null },
+      expect.objectContaining({ actorType: "user" }),
+    );
+  });
+
+  it("rejects an invalid agent response language tag", async () => {
+    mockCompanyService.getById.mockResolvedValue(createCompany());
+    const app = await createApp({
+      type: "board",
+      userId: "user-1",
+      source: "local_implicit",
+    });
+
+    const res = await request(app)
+      .patch("/api/companies/company-1")
+      .send({ agentResponseLanguage: "not a language!" });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("Validation error");
+    expect(mockCompanyService.update).not.toHaveBeenCalled();
+  });
+
+  it("keeps the agent response language out of the CEO agent branding lane", async () => {
+    mockAgentService.getById.mockResolvedValue({
+      id: "agent-1",
+      companyId: "company-1",
+      role: "ceo",
+    });
+    mockCompanyService.getById.mockResolvedValue(createCompany());
+    const app = await createApp({
+      type: "agent",
+      agentId: "agent-1",
+      companyId: "company-1",
+      source: "agent_key",
+      runId: "run-1",
+    });
+
+    const res = await request(app)
+      .patch("/api/companies/company-1")
+      .send({ agentResponseLanguage: "es" });
+
+    expect(res.status).toBe(400);
+    expect(mockCompanyService.update).not.toHaveBeenCalled();
+  });
 });

@@ -155,6 +155,7 @@ export function companyService(db: Db) {
     feedbackDataSharingConsentAt: companies.feedbackDataSharingConsentAt,
     feedbackDataSharingConsentByUserId: companies.feedbackDataSharingConsentByUserId,
     feedbackDataSharingTermsVersion: companies.feedbackDataSharingTermsVersion,
+    agentResponseLanguage: companies.agentResponseLanguage,
     logoAssetId: companyLogos.assetId,
     createdAt: companies.createdAt,
     updatedAt: companies.updatedAt,

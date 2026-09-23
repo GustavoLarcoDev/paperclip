@@ -4,7 +4,11 @@ import { createHash, randomUUID } from "node:crypto";
 import { constants as fsConstants, promises as fs, type Dirent } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { CONNECTION_INTENT_AGENT_GUIDANCE } from "@paperclipai/shared";
+import {
+  CONNECTION_INTENT_AGENT_GUIDANCE,
+  canonicalizeAgentResponseLanguage,
+  renderAgentResponseLanguageDirective,
+} from "@paperclipai/shared";
 import { sanitizeRemoteExecutionEnv } from "./remote-execution-env.js";
 import {
   buildLocalProcessSandboxSpawnTarget,
@@ -812,6 +816,8 @@ type PaperclipWakePayload = {
   // Experimental: write user-interaction content in ASD-STE100 Simplified
   // Technical English with brief decision context.
   simplifiedEnglishInteractions: boolean;
+  // Company preference: BCP-47 tag for the language of user-facing output.
+  responseLanguage: string | null;
   dependencyBlockedInteraction: boolean;
   treeHoldInteraction: boolean;
   activeTreeHold: PaperclipWakeTreeHoldSummary | null;
@@ -1869,6 +1875,7 @@ export function normalizePaperclipWakePayload(
       payload.simplifiedEnglishInteractions,
       false,
     ),
+    responseLanguage: canonicalizeAgentResponseLanguage(payload.responseLanguage),
     dependencyBlockedInteraction: asBoolean(
       payload.dependencyBlockedInteraction,
       false,
@@ -2570,6 +2577,13 @@ function renderPaperclipWakePromptBody(
   if (normalized.simplifiedEnglishInteractions) {
     lines.push(
       "- interaction language (experimental): write every user interaction you post (request_confirmation, ask_user_questions, suggest_tasks, checkbox prompts and options, and any other content rendered inside an interaction block) in ASD-STE100 Simplified Technical English. In each interaction, briefly tell the user what information they need to make the decision and what happens for each choice. This applies only to interaction content — write your thinking, comments, documents, and other responses in your usual style.",
+    );
+  }
+  if (normalized.responseLanguage) {
+    // Rendered on fresh and resumed wakes: the company setting can change
+    // between wakes of the same session.
+    lines.push(
+      `- response language: ${renderAgentResponseLanguageDirective(normalized.responseLanguage)}`,
     );
   }
   if (normalized.dependencyBlockedInteraction) {

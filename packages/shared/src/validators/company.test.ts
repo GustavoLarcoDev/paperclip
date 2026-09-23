@@ -72,3 +72,30 @@ describe("portability company manifest tolerance", () => {
     expect(parsed.name).toBe("Acme");
   });
 });
+
+describe("agentResponseLanguage", () => {
+  it("canonicalizes valid BCP-47 tags", () => {
+    expect(updateCompanySchema.parse({ agentResponseLanguage: "es" }).agentResponseLanguage).toBe("es");
+    expect(updateCompanySchema.parse({ agentResponseLanguage: " ES " }).agentResponseLanguage).toBe("es");
+    expect(updateCompanySchema.parse({ agentResponseLanguage: "pt-br" }).agentResponseLanguage).toBe("pt-BR");
+  });
+
+  it("treats null and empty string as no preference", () => {
+    expect(updateCompanySchema.parse({ agentResponseLanguage: null }).agentResponseLanguage).toBeNull();
+    expect(updateCompanySchema.parse({ agentResponseLanguage: "" }).agentResponseLanguage).toBeNull();
+  });
+
+  it("leaves the field absent when not sent", () => {
+    expect(updateCompanySchema.parse({ name: "Acme" })).not.toHaveProperty("agentResponseLanguage");
+  });
+
+  it("rejects malformed tags and non-strings", () => {
+    expect(updateCompanySchema.safeParse({ agentResponseLanguage: "not a language!" }).success).toBe(false);
+    expect(updateCompanySchema.safeParse({ agentResponseLanguage: "x".repeat(40) }).success).toBe(false);
+    expect(updateCompanySchema.safeParse({ agentResponseLanguage: 42 }).success).toBe(false);
+  });
+
+  it("is not accepted by the strict branding schema", () => {
+    expect(updateCompanyBrandingSchema.safeParse({ agentResponseLanguage: "es" }).success).toBe(false);
+  });
+});

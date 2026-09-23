@@ -138,4 +138,42 @@ describe("agent session wake messages", () => {
     expect(prompt).toContain('````text\n{\n  "untrustedToolResults"');
   });
 
+
+  it("carries the company response language into the wake payload and every adapter's wake prompt", async () => {
+    const build = (responseLanguage: string | null | undefined) =>
+      buildPaperclipWakePayload({
+        db: {
+          select: () => ({
+            from: () => ({
+              where: async () => [],
+            }),
+          }),
+        } as never,
+        companyId: "company-1",
+        contextSnapshot: { wakeReason: "issue_assigned", issueId: "issue-1" },
+        issueSummary: {
+          id: "issue-1",
+          identifier: "PAP-1",
+          title: "Localized output",
+          description: null,
+          status: "in_progress",
+          priority: "medium",
+          workMode: "standard",
+        },
+        responseLanguage,
+      });
+
+    const spanish = await build("ES");
+    expect(spanish?.responseLanguage).toBe("es");
+    expect(renderPaperclipWakePrompt(spanish)).toContain(
+      "- response language: Write all user-facing output",
+    );
+    expect(renderPaperclipWakePrompt(spanish)).toContain("in Spanish (es)");
+
+    for (const unset of [null, undefined]) {
+      const payload = await build(unset);
+      expect(payload?.responseLanguage).toBeNull();
+      expect(renderPaperclipWakePrompt(payload)).not.toContain("response language");
+    }
+  });
 });
