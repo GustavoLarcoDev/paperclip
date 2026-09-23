@@ -14,6 +14,7 @@ import { Router, type NextFunction, type Request, type Response } from "express"
 import { generateKeyPairSync, randomUUID } from "node:crypto";
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
+import { isDeepStrictEqual } from "node:util";
 import type { Db } from "@paperclipai/db";
 import type { ChatChannelService } from "../services/chat-channels.js";
 import { activityLog, agents as agentsTable, chatConversations, companies, heartbeatRuns, issues as issuesTable, projects as projectsTable } from "@paperclipai/db";
@@ -5290,7 +5291,11 @@ export function agentRoutes(
     const nextAiBinding = aiConnectionBindingSchema.safeParse(requestedRuntimeConfig?.aiConnection ?? existing.runtimeConfig.aiConnection).data;
     if (nextAiBinding) {
       await assertCanUpdateAgent(req, existing);
-      const changed = JSON.stringify(nextAiBinding) !== JSON.stringify(existing.runtimeConfig.aiConnection);
+      // Compare parsed bindings structurally: the stored JSON keeps a different
+      // key order than the parser, so a string compare always saw a change and
+      // re-validated the connection on every agent PATCH.
+      const existingAiBinding = aiConnectionBindingSchema.safeParse(existing.runtimeConfig.aiConnection).data;
+      const changed = !isDeepStrictEqual(nextAiBinding, existingAiBinding);
       const aiConfig = (patchData.adapterConfig ?? existing.adapterConfig) as Record<string, unknown>;
       if (!isAiConnectionCompatible(nextAiBinding, requestedAdapterType, aiConfig.model, aiConfig.provider, aiConfig.acpxAgent)) throw unprocessable("Select an AI connection compatible with the new harness and model");
       if (changed) await validateManagedAgentBinding(req, existing.companyId, existing.id, requestedAdapterType, aiConfig, nextAiBinding, (patchData.defaultEnvironmentId !== undefined ? patchData.defaultEnvironmentId : existing.defaultEnvironmentId) as string | null, true);
