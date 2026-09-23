@@ -26,7 +26,7 @@ not "Nueva Tarea"). Keep product names, code, commands and file paths as is.
 | Decision | Decisión |
 | Run | Ejecución |
 | Heartbeat | Revisión periódica |
-| Adapter / Model source | Modelo / proveedor |
+| Adapter / Model source | Proveedor (keep "Modelo" for Model) |
 | Workspace | Espacio de trabajo |
 | Backlog | Pendientes |
 | Todo | Por hacer |
@@ -44,3 +44,11 @@ not "Nueva Tarea"). Keep product names, code, commands and file paths as is.
 | Save / Cancel / Delete | Guardar / Cancelar / Eliminar |
 | Org chart | Organigrama |
 | Keyboard shortcuts | Atajos de teclado |
+| Board (the human operator) | Directorio |
+| Runner | Ejecutor |
+| Runtime | Entorno de ejecución |
+| Onboarding | Configuración inicial |
+| Star / Starred | Destacar / Destacados |
+| Live | En vivo |
+| Timeline | Cronología |
+| Conference room | Sala de reuniones |
