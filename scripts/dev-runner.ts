@@ -881,6 +881,11 @@ process.on("SIGINT", () => {
 process.on("SIGTERM", () => {
   void shutdown("SIGTERM");
 });
+// A closed terminal sends SIGHUP; stop the server child the same way as SIGTERM
+// so it shuts down embedded Postgres instead of leaving it orphaned.
+process.on("SIGHUP", () => {
+  void shutdown("SIGTERM");
+});
 
 // The managed runtime readiness window is tight, so reuse a fresh bundle
 // when possible and overlap a needed rebuild with the migration preflight.
