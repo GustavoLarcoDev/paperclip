@@ -1,0 +1,155 @@
+{
+  "newIssue": {
+    "header": {
+      "newTask": "Nueva tarea",
+      "newSubTask": "Nueva subtarea"
+    },
+    "title": {
+      "placeholder": "Título de la tarea"
+    },
+    "description": {
+      "placeholder": "Agrega una descripción..."
+    },
+    "assignee": {
+      "for": "Para",
+      "in": "en",
+      "placeholder": "Responsable",
+      "none": "Sin responsable",
+      "search": "Buscar responsables...",
+      "empty": "No se encontraron responsables.",
+      "lowTrustAgent": "Agente de revisión de baja confianza"
+    },
+    "project": {
+      "placeholder": "Proyecto",
+      "none": "Sin proyecto",
+      "search": "Buscar proyectos...",
+      "empty": "No se encontraron proyectos."
+    },
+    "participants": {
+      "menuTitle": "Agregar revisor, aprobador o supervisor",
+      "reviewer": "Revisor",
+      "approver": "Aprobador",
+      "watchdog": "Supervisor"
+    },
+    "reviewer": {
+      "placeholder": "Revisor",
+      "none": "Sin revisor",
+      "search": "Buscar revisores...",
+      "empty": "No se encontraron revisores."
+    },
+    "approver": {
+      "placeholder": "Aprobador",
+      "none": "Sin aprobador",
+      "search": "Buscar aprobadores...",
+      "empty": "No se encontraron aprobadores."
+    },
+    "watchdog": {
+      "configure": "Configurar supervisor",
+      "set": "Asignar supervisor",
+      "agent": "Agente supervisor",
+      "selectAgent": "Selecciona un agente",
+      "none": "Sin agente supervisor",
+      "search": "Buscar agentes...",
+      "empty": "No se encontraron agentes.",
+      "instructions": "Instrucciones",
+      "optional": "(opcional)",
+      "instructionsPlaceholder": "¿Qué debe vigilar el supervisor y cómo debe mantener el trabajo en marcha?",
+      "remove": "Quitar",
+      "done": "Listo"
+    },
+    "subTask": {
+      "of": "Subtarea de"
+    },
+    "executionWorkspace": {
+      "title": "Espacio de trabajo de ejecución",
+      "description": "Elige si esta tarea se ejecuta en el espacio de trabajo compartido, en un espacio de trabajo aislado nuevo o en uno existente.",
+      "modes": {
+        "sharedWorkspace": "Predeterminado del proyecto",
+        "isolatedWorkspace": "Nuevo espacio de trabajo aislado",
+        "reuseExisting": "Reutilizar un espacio de trabajo existente"
+      },
+      "reusing": "Se reutilizará {{name}} de {{source}}.",
+      "existingFallback": "un espacio de trabajo de ejecución existente",
+      "parentWarning": "Advertencia: esta subtarea ya no usará el espacio de trabajo de la tarea principal.",
+      "parentWarningWithLabel": "Advertencia: esta subtarea ya no usará el espacio de trabajo de la tarea principal ({{label}})."
+    },
+    "assigneeOptions": {
+      "claude": "Opciones de Claude",
+      "codex": "Opciones de Codex",
+      "opencode": "Opciones de OpenCode",
+      "agent": "Opciones del agente",
+      "modelLane": "Modelo a usar",
+      "primary": "Principal",
+      "custom": "Personalizado",
+      "primaryHint": "Se ejecuta con el modelo principal del agente.",
+      "customHint": "Cambia el modelo y el esfuerzo solo para esta tarea.",
+      "model": "Modelo",
+      "defaultModel": "Modelo predeterminado",
+      "searchModels": "Buscar modelos...",
+      "noModels": "No se encontraron modelos.",
+      "thinkingEffort": "Esfuerzo de razonamiento",
+      "enableChrome": "Activar Chrome (--chrome)"
+    },
+    "thinkingEffort": {
+      "default": "Predeterminado",
+      "minimal": "Mínimo",
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "xhigh": "Muy alto",
+      "max": "Máximo",
+      "ultra": "Ultra"
+    },
+    "files": {
+      "documents": "Documentos",
+      "attachments": "Adjuntos",
+      "removeDocument": "Quitar documento",
+      "removeAttachment": "Quitar adjunto",
+      "upload": "Subir"
+    },
+    "status": {
+      "backlog": "Pendientes",
+      "todo": "Por hacer",
+      "inProgress": "En curso",
+      "inReview": "En revisión",
+      "done": "Hecha",
+      "backlogDescription": "En espera - no se activará al responsable",
+      "todoDescription": "Ejecutable - se activará al responsable"
+    },
+    "priority": {
+      "label": "Prioridad",
+      "critical": "Crítica",
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja"
+    },
+    "workMode": {
+      "standard": "Modo automático",
+      "planning": "Modo planificación",
+      "ask": "Modo consulta"
+    },
+    "moreOptions": "Más opciones",
+    "notes": {
+      "assignedBacklog": "Asignar una tarea indica que debe ejecutarse: deja el estado en {{backlog}} solo si quieres aparcarla a propósito. El responsable no se activará hasta que el estado pase a {{todo}} o {{inProgress}}.",
+      "pausedAssignee": "{{name}} está en pausa y no empezará a trabajar en esta tarea hasta que se reanude. Puedes reanudarlo desde la página de la tarea después de crearla.",
+      "pausedAssigneeFromImport": "{{name}} está en pausa y no empezará a trabajar en esta tarea hasta que se reanude; llegó en pausa desde la importación de una organización. Puedes reanudarlo desde la página de la tarea después de crearla.",
+      "lowTrustAssignee": "Agente de revisión de baja confianza. Solo puede actuar dentro del ámbito de revisión asignado; la política de la tarea, del proyecto o de la ejecución define el alcance concreto."
+    },
+    "footer": {
+      "discardDraft": "Descartar borrador",
+      "creating": "Creando...",
+      "createTask": "Crear tarea",
+      "createSubTask": "Crear subtarea",
+      "createFailed": "No se pudo crear la tarea. Inténtalo de nuevo."
+    },
+    "toast": {
+      "uploadWarningsTitle": "Se creó {{issueRef}} con advertencias de carga",
+      "uploadWarningsBody_one": "No se pudo agregar {{count}} archivo preparado.",
+      "uploadWarningsBody_other": "No se pudieron agregar {{count}} archivos preparados.",
+      "open": "Abrir {{issueRef}}"
+    },
+    "errors": {
+      "noOrganization": "No hay ninguna organización seleccionada"
+    }
+  }
+}

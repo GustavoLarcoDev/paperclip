@@ -1,0 +1,155 @@
+{
+  "newIssue": {
+    "header": {
+      "newTask": "New task",
+      "newSubTask": "New sub-task"
+    },
+    "title": {
+      "placeholder": "Task title"
+    },
+    "description": {
+      "placeholder": "Add description..."
+    },
+    "assignee": {
+      "for": "For",
+      "in": "in",
+      "placeholder": "Assignee",
+      "none": "No assignee",
+      "search": "Search assignees...",
+      "empty": "No assignees found.",
+      "lowTrustAgent": "Low-trust review agent"
+    },
+    "project": {
+      "placeholder": "Project",
+      "none": "No project",
+      "search": "Search projects...",
+      "empty": "No projects found."
+    },
+    "participants": {
+      "menuTitle": "Add reviewer, approver, or watchdog",
+      "reviewer": "Reviewer",
+      "approver": "Approver",
+      "watchdog": "Watchdog"
+    },
+    "reviewer": {
+      "placeholder": "Reviewer",
+      "none": "No reviewer",
+      "search": "Search reviewers...",
+      "empty": "No reviewers found."
+    },
+    "approver": {
+      "placeholder": "Approver",
+      "none": "No approver",
+      "search": "Search approvers...",
+      "empty": "No approvers found."
+    },
+    "watchdog": {
+      "configure": "Configure watchdog",
+      "set": "Set watchdog",
+      "agent": "Watchdog agent",
+      "selectAgent": "Select agent",
+      "none": "No watchdog agent",
+      "search": "Search agents...",
+      "empty": "No agents found.",
+      "instructions": "Instructions",
+      "optional": "(optional)",
+      "instructionsPlaceholder": "What should the watchdog watch for and how should it keep work moving?",
+      "remove": "Remove",
+      "done": "Done"
+    },
+    "subTask": {
+      "of": "Sub-task of"
+    },
+    "executionWorkspace": {
+      "title": "Execution workspace",
+      "description": "Control whether this task runs in the shared workspace, a new isolated workspace, or an existing one.",
+      "modes": {
+        "sharedWorkspace": "Project default",
+        "isolatedWorkspace": "New isolated workspace",
+        "reuseExisting": "Reuse existing workspace"
+      },
+      "reusing": "Reusing {{name}} from {{source}}.",
+      "existingFallback": "existing execution workspace",
+      "parentWarning": "Warning: this sub-task will no longer use the parent task workspace.",
+      "parentWarningWithLabel": "Warning: this sub-task will no longer use the parent task workspace ({{label}})."
+    },
+    "assigneeOptions": {
+      "claude": "Claude options",
+      "codex": "Codex options",
+      "opencode": "OpenCode options",
+      "agent": "Agent options",
+      "modelLane": "Model lane",
+      "primary": "Primary",
+      "custom": "Custom",
+      "primaryHint": "Runs on the agent's primary model.",
+      "customHint": "Override the model and effort for this task only.",
+      "model": "Model",
+      "defaultModel": "Default model",
+      "searchModels": "Search models...",
+      "noModels": "No models found.",
+      "thinkingEffort": "Thinking effort",
+      "enableChrome": "Enable Chrome (--chrome)"
+    },
+    "thinkingEffort": {
+      "default": "Default",
+      "minimal": "Minimal",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "xhigh": "X-High",
+      "max": "Max",
+      "ultra": "Ultra"
+    },
+    "files": {
+      "documents": "Documents",
+      "attachments": "Attachments",
+      "removeDocument": "Remove document",
+      "removeAttachment": "Remove attachment",
+      "upload": "Upload"
+    },
+    "status": {
+      "backlog": "Backlog",
+      "todo": "Todo",
+      "inProgress": "In Progress",
+      "inReview": "In Review",
+      "done": "Done",
+      "backlogDescription": "Parked - assignee will not be woken",
+      "todoDescription": "Executable - assignee will be woken"
+    },
+    "priority": {
+      "label": "Priority",
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "workMode": {
+      "standard": "Auto mode",
+      "planning": "Plan mode",
+      "ask": "Ask mode"
+    },
+    "moreOptions": "More options",
+    "notes": {
+      "assignedBacklog": "Assigning implies executable intent - leave status as {{backlog}} only to deliberately park this. The assignee will not be woken until status moves to {{todo}} or {{inProgress}}.",
+      "pausedAssignee": "{{name}} is paused and will not start work on this task until it is resumed. You can resume it from the task page after creating the task.",
+      "pausedAssigneeFromImport": "{{name}} is paused and will not start work on this task until it is resumed — it arrived paused from an organization import. You can resume it from the task page after creating the task.",
+      "lowTrustAssignee": "Low-trust review agent. It can only act inside its assigned review boundary; task, project, or run policy defines the concrete scope."
+    },
+    "footer": {
+      "discardDraft": "Discard Draft",
+      "creating": "Creating...",
+      "createTask": "Create Task",
+      "createSubTask": "Create Sub-Task",
+      "createFailed": "Failed to create task. Try again."
+    },
+    "toast": {
+      "uploadWarningsTitle": "Created {{issueRef}} with upload warnings",
+      "uploadWarningsBody_one": "{{count}} staged file could not be added.",
+      "uploadWarningsBody_other": "{{count}} staged files could not be added.",
+      "open": "Open {{issueRef}}"
+    },
+    "errors": {
+      "noOrganization": "No organization selected"
+    }
+  }
+}
