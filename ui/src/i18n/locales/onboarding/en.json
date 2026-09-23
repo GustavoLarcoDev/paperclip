@@ -1,0 +1,127 @@
+{
+  "onboarding": {
+    "wizard": {
+      "headings": {
+        "nameOrganization": "What is the name of your organization?",
+        "createFirstAgent": "Create your first agent",
+        "connectModel": "Connect a model",
+        "getStarted": "Let's get started..."
+      },
+      "lede": {
+        "connectModel": "Paperclip works with your subscription or API keys.",
+        "readyToWork": "{{name}} is ready to work!",
+        "yourFirstAgent": "Your first agent"
+      },
+      "companyName": {
+        "label": "Name",
+        "placeholder": "e.g. Northwind Labs"
+      },
+      "agentName": {
+        "label": "Agent name",
+        "placeholder": "e.g. Chief of staff"
+      },
+      "connect": {
+        "modelSource": "Model source",
+        "savedKeysAvailable_one": "{{count}} saved API key available.",
+        "savedKeysAvailable_other": "{{count}} saved API keys available.",
+        "existingConnection": "An existing provider connection is available.",
+        "chooseSavedKey": "Choose a saved API key or enter a new one",
+        "provideApiKey": "Provide your {{source}} API key to connect",
+        "apiKeyLabel": "API key",
+        "apiKeyPlaceholder": "Enter API key here",
+        "noBrowserSignIn": "This environment does not support browser sign-in. Choose another sign-in environment or connect with an API key.",
+        "testingConnection": "Testing connection…",
+        "connectingEllipsis": "Connecting…",
+        "gatewayUrl": "Gateway URL",
+        "webhookUrl": "Webhook URL"
+      },
+      "cta": {
+        "testing": "Testing…",
+        "waitingForCode": "Waiting for code",
+        "connecting": "Connecting",
+        "signInTo": "Sign in to {{source}}",
+        "connect": "Connect",
+        "next": "Next",
+        "continue": "Continue",
+        "getStarted": "Get started",
+        "creating": "Creating...",
+        "launching": "Launching..."
+      },
+      "envCheck": {
+        "passed": "Passed",
+        "warnings": "Warnings",
+        "failed": "Failed",
+        "hint": "Hint: {{hint}}",
+        "anthropicKeyPrefix": "Claude failed while",
+        "anthropicKeySuffix": "is set. You can clear it in this adapter config and retry the probe.",
+        "retrying": "Retrying...",
+        "unsetAnthropicKey": "Unset ANTHROPIC_API_KEY",
+        "manualDebug": "Manual debug",
+        "prompt": "Prompt:",
+        "authFailsPrefix": "If auth fails, set",
+        "authFailsMiddle": "in env or run",
+        "loginRequiredPrefix": "If login is required, run",
+        "loginRequiredSuffix": "and retry."
+      },
+      "errors": {
+        "incompleteState": "Onboarding state is incomplete. Please restart onboarding and try again.",
+        "companySwitched": "Organization created, but onboarding switched to another organization.",
+        "launchFailed": "Failed to launch first task",
+        "storeApiKeyFailedWithReason": "Could not store the API key: {{message}}",
+        "storeApiKeyFailed": "Could not store the API key.",
+        "selectOrganizationFirst": "Create or select an organization before testing adapter environment.",
+        "environmentSettingsFailed": "Could not load environment settings to determine which environment to test in. Retry the test.",
+        "environmentTestFailed": "Adapter environment test failed",
+        "createOrganizationFailed": "Failed to create organization",
+        "runnerUnavailable": "Paperclip Runner is not available during onboarding. Choose a legacy adapter.",
+        "openCodeModelRequired": "OpenCode requires an explicit model in provider/model format.",
+        "openCodeModelsLoadFailed": "Failed to load OpenCode models.",
+        "openCodeModelsLoading": "OpenCode models are still loading. Please wait and try again.",
+        "openCodeNoModels": "No OpenCode models discovered. Run `opencode models` and authenticate providers.",
+        "openCodeModelUnavailable": "Configured OpenCode model is unavailable: {{model}}",
+        "environmentCheckFailed": "The environment test failed. Fix the reported checks before you hire this agent.",
+        "noWorkingAuth": "No working authentication was found. Fix the reported checks before you hire this agent.",
+        "createAgentFailed": "Failed to create agent",
+        "unsetRetryStillFailing": "Retried with ANTHROPIC_API_KEY unset in adapter config, but the environment test is still failing.",
+        "unsetRetryFailed": "Failed to unset ANTHROPIC_API_KEY and retry."
+      }
+    },
+    "stepper": {
+      "stepOf": "Step {{step}} of {{total}}",
+      "step": "Step {{step}}",
+      "labels": {
+        "nameOrganization": "Name your organization",
+        "createFirstAgent": "Create your first agent",
+        "connectModel": "Connect a model",
+        "review": "Review"
+      }
+    },
+    "footer": {
+      "back": "Back"
+    },
+    "credentialMode": {
+      "useApiKey": "Use API key instead",
+      "useSubscription": "Use subscription instead"
+    },
+    "sourceTiles": {
+      "subscription": "Subscription",
+      "api": "API"
+    },
+    "savedKeys": {
+      "apiKey": "API key",
+      "subscription": "Subscription",
+      "savedApiKeyAria": "Saved API key",
+      "savedSubscriptionAria": "Saved subscription",
+      "enterNewApiKey": "Enter a new API key",
+      "signInAnotherAccount": "Sign in to another account",
+      "checking": "Checking saved API keys…",
+      "loadError": "Some saved keys could not be loaded. You can still enter a new key.",
+      "reuseKey": "Reuse this saved key for this agent.",
+      "reuseSubscription": "Reuse this saved subscription for this agent."
+    },
+    "connectPreview": {
+      "lede": "Paperclip works with your existing subscription or API keys.",
+      "useApiKeys": "Use API keys instead"
+    }
+  }
+}

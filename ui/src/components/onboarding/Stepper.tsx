@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { cn } from "../../lib/utils";
 
 /**
@@ -14,9 +15,9 @@ export const AGENT_ARC_TOTAL_STEPS = 3;
  * than no number at all. The strip's own "Step N of 3" line carries the count.
  */
 export const AGENT_ARC_STEP_LABELS = [
-  "Create your first agent",
-  "Connect a model",
-  "Review",
+  "onboarding.stepper.labels.createFirstAgent",
+  "onboarding.stepper.labels.connectModel",
+  "onboarding.stepper.labels.review",
 ] as const;
 
 /** Wizard step numbers that make up the arc, in order. */
@@ -35,10 +36,10 @@ export const ONBOARDING_WIZARD_STEPS = [1, 3, 4, 5] as const;
 
 /** Destinations for the full walk, in the same order. */
 export const ONBOARDING_STEP_LABELS = [
-  "Name your organization",
-  "Create your first agent",
-  "Connect a model",
-  "Review",
+  "onboarding.stepper.labels.nameOrganization",
+  "onboarding.stepper.labels.createFirstAgent",
+  "onboarding.stepper.labels.connectModel",
+  "onboarding.stepper.labels.review",
 ] as const;
 
 /**
@@ -102,11 +103,14 @@ export function Stepper({
    * the front door passes its own four, since the same strip serves both and a
    * segment announcing "Create your first agent" on the organization step would
    * be worse than a bare number.
+   *
+   * Translation keys (see `locales/onboarding`), resolved here.
    */
   labels?: readonly string[];
   canJumpToStep?: (target: number) => boolean;
   onJumpToStep?: (target: number) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="mb-11 flex items-center justify-center gap-2">
       {Array.from({ length: total }, (_, index) => index + 1).map((segment) => {
@@ -115,7 +119,7 @@ export function Stepper({
           <button
             key={segment}
             type="button"
-            aria-label={labels[segment - 1] ?? `Step ${segment}`}
+            aria-label={labels[segment - 1] ? t(labels[segment - 1]!) : t("onboarding.stepper.step", { step: segment })}
             aria-current={segment === step ? "step" : undefined}
             disabled={!jumpable}
             onClick={() => jumpable && onJumpToStep?.(segment)}
@@ -134,7 +138,7 @@ export function Stepper({
       })}
       {/* Out of flow, so it neither takes a row nor picks up the gap. */}
       <span className="sr-only">
-        Step {step} of {total}
+        {t("onboarding.stepper.stepOf", { step, total })}
       </span>
     </div>
   );

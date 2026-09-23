@@ -1,0 +1,127 @@
+{
+  "onboarding": {
+    "wizard": {
+      "headings": {
+        "nameOrganization": "¿Cómo se llama tu organización?",
+        "createFirstAgent": "Crea tu primer agente",
+        "connectModel": "Conecta un modelo",
+        "getStarted": "¡Comencemos!"
+      },
+      "lede": {
+        "connectModel": "Paperclip funciona con tu suscripción o con claves de API.",
+        "readyToWork": "¡{{name}} ya puede empezar a trabajar!",
+        "yourFirstAgent": "Tu primer agente"
+      },
+      "companyName": {
+        "label": "Nombre",
+        "placeholder": "p. ej., Northwind Labs"
+      },
+      "agentName": {
+        "label": "Nombre del agente",
+        "placeholder": "p. ej., Jefe de gabinete"
+      },
+      "connect": {
+        "modelSource": "Proveedor del modelo",
+        "savedKeysAvailable_one": "Hay {{count}} clave de API guardada disponible.",
+        "savedKeysAvailable_other": "Hay {{count}} claves de API guardadas disponibles.",
+        "existingConnection": "Hay una conexión con el proveedor disponible.",
+        "chooseSavedKey": "Elige una clave de API guardada o ingresa una nueva",
+        "provideApiKey": "Ingresa tu clave de API de {{source}} para conectarte",
+        "apiKeyLabel": "Clave de API",
+        "apiKeyPlaceholder": "Ingresa la clave de API aquí",
+        "noBrowserSignIn": "Este entorno no admite el inicio de sesión desde el navegador. Elige otro entorno para iniciar sesión o conéctate con una clave de API.",
+        "testingConnection": "Probando la conexión…",
+        "connectingEllipsis": "Conectando…",
+        "gatewayUrl": "URL del gateway",
+        "webhookUrl": "URL del webhook"
+      },
+      "cta": {
+        "testing": "Probando…",
+        "waitingForCode": "Esperando el código",
+        "connecting": "Conectando",
+        "signInTo": "Iniciar sesión en {{source}}",
+        "connect": "Conectar",
+        "next": "Siguiente",
+        "continue": "Continuar",
+        "getStarted": "Comenzar",
+        "creating": "Creando...",
+        "launching": "Iniciando..."
+      },
+      "envCheck": {
+        "passed": "Aprobada",
+        "warnings": "Advertencias",
+        "failed": "Fallida",
+        "hint": "Sugerencia: {{hint}}",
+        "anthropicKeyPrefix": "Claude falló porque",
+        "anthropicKeySuffix": "está definida. Puedes quitarla de la configuración de este proveedor y repetir la prueba.",
+        "retrying": "Reintentando...",
+        "unsetAnthropicKey": "Quitar ANTHROPIC_API_KEY",
+        "manualDebug": "Depuración manual",
+        "prompt": "Prompt:",
+        "authFailsPrefix": "Si falla la autenticación, define",
+        "authFailsMiddle": "en el entorno o ejecuta",
+        "loginRequiredPrefix": "Si hace falta iniciar sesión, ejecuta",
+        "loginRequiredSuffix": "y vuelve a intentarlo."
+      },
+      "errors": {
+        "incompleteState": "El estado de la configuración inicial está incompleto. Reinicia la configuración inicial y vuelve a intentarlo.",
+        "companySwitched": "La organización se creó, pero la configuración inicial cambió a otra organización.",
+        "launchFailed": "No se pudo iniciar la primera tarea",
+        "storeApiKeyFailedWithReason": "No se pudo guardar la clave de API: {{message}}",
+        "storeApiKeyFailed": "No se pudo guardar la clave de API.",
+        "selectOrganizationFirst": "Crea o selecciona una organización antes de probar el entorno del proveedor.",
+        "environmentSettingsFailed": "No se pudieron cargar los ajustes de entorno para saber en qué entorno probar. Vuelve a intentar la prueba.",
+        "environmentTestFailed": "Falló la prueba del entorno del proveedor",
+        "createOrganizationFailed": "No se pudo crear la organización",
+        "runnerUnavailable": "Paperclip Runner no está disponible durante la configuración inicial. Elige un proveedor clásico.",
+        "openCodeModelRequired": "OpenCode requiere un modelo explícito con el formato provider/model.",
+        "openCodeModelsLoadFailed": "No se pudieron cargar los modelos de OpenCode.",
+        "openCodeModelsLoading": "Los modelos de OpenCode todavía se están cargando. Espera un momento y vuelve a intentarlo.",
+        "openCodeNoModels": "No se encontraron modelos de OpenCode. Ejecuta `opencode models` y autentica los proveedores.",
+        "openCodeModelUnavailable": "El modelo de OpenCode configurado no está disponible: {{model}}",
+        "environmentCheckFailed": "La prueba del entorno falló. Corrige las comprobaciones indicadas antes de contratar a este agente.",
+        "noWorkingAuth": "No se encontró una autenticación válida. Corrige las comprobaciones indicadas antes de contratar a este agente.",
+        "createAgentFailed": "No se pudo crear el agente",
+        "unsetRetryStillFailing": "Se volvió a intentar sin ANTHROPIC_API_KEY en la configuración del proveedor, pero la prueba del entorno sigue fallando.",
+        "unsetRetryFailed": "No se pudo quitar ANTHROPIC_API_KEY ni volver a intentarlo."
+      }
+    },
+    "stepper": {
+      "stepOf": "Paso {{step}} de {{total}}",
+      "step": "Paso {{step}}",
+      "labels": {
+        "nameOrganization": "Ponle nombre a tu organización",
+        "createFirstAgent": "Crea tu primer agente",
+        "connectModel": "Conecta un modelo",
+        "review": "Revisión"
+      }
+    },
+    "footer": {
+      "back": "Atrás"
+    },
+    "credentialMode": {
+      "useApiKey": "Usar una clave de API",
+      "useSubscription": "Usar una suscripción"
+    },
+    "sourceTiles": {
+      "subscription": "Suscripción",
+      "api": "API"
+    },
+    "savedKeys": {
+      "apiKey": "Clave de API",
+      "subscription": "Suscripción",
+      "savedApiKeyAria": "Clave de API guardada",
+      "savedSubscriptionAria": "Suscripción guardada",
+      "enterNewApiKey": "Ingresar una clave de API nueva",
+      "signInAnotherAccount": "Iniciar sesión con otra cuenta",
+      "checking": "Buscando claves de API guardadas…",
+      "loadError": "No se pudieron cargar algunas claves guardadas. Aún puedes ingresar una clave nueva.",
+      "reuseKey": "Se usará esta clave guardada para este agente.",
+      "reuseSubscription": "Se usará esta suscripción guardada para este agente."
+    },
+    "connectPreview": {
+      "lede": "Paperclip funciona con tu suscripción actual o con claves de API.",
+      "useApiKeys": "Usar claves de API"
+    }
+  }
+}

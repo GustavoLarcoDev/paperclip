@@ -1,6 +1,7 @@
 import { useRef, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
+import { useTranslation } from "@/i18n";
 import { cn } from "../../lib/utils";
 import {
   SOURCE_EXIT_FADE,
@@ -30,8 +31,8 @@ export type ModelSource = {
 };
 
 const CREDENTIAL_TAG_LABEL: Record<CredentialMode, string> = {
-  subscription: "Subscription",
-  api: "API",
+  subscription: "onboarding.sourceTiles.subscription",
+  api: "onboarding.sourceTiles.api",
 };
 
 /**
@@ -44,6 +45,7 @@ const CREDENTIAL_TAG_LABEL: Record<CredentialMode, string> = {
  * tile's padding and over the row below.
  */
 export function CredentialTag({ mode }: { mode: CredentialMode }) {
+  const { t } = useTranslation();
   return (
     <span className="relative flex h-4 w-full items-center justify-center overflow-hidden text-(length:--text-micro) text-muted-foreground">
       <AnimatePresence initial={false} mode="sync">
@@ -54,7 +56,7 @@ export function CredentialTag({ mode }: { mode: CredentialMode }) {
           animate={{ opacity: 1, y: 0, transition: TAG_SWAP_ENTER }}
           exit={{ opacity: 0, y: TAG_SWAP_TRAVEL, transition: TAG_SWAP_EXIT }}
         >
-          {CREDENTIAL_TAG_LABEL[mode]}
+          {t(CREDENTIAL_TAG_LABEL[mode])}
         </motion.span>
       </AnimatePresence>
     </span>
