@@ -19,6 +19,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "../ui/dialog";
+import { useTranslation } from "@/i18n";
 
 export type AgentBasics = {
   name: string;
@@ -100,6 +101,7 @@ export function AgentBasicsDialog({
   initialAdapter?: string;
   onInvite?: () => void;
 }) {
+  const { t } = useTranslation();
   const id = useId();
   const cloud = Boolean(useCloudInstance());
   const experimental = useQuery({
@@ -133,14 +135,17 @@ export function AgentBasicsDialog({
       !getAdapterDisplay(adapter.type).comingSoon,
   );
   const validAdapter = choices.some((adapter) => adapter.type === adapterType);
-  // Lead with the adapters the display registry marks `recommended` (the same
-  // set onboarding offers under "Model source"); the rest stay one click away.
-  const recommended = choices.filter(
-    (adapter) => getAdapterDisplay(adapter.type).recommended,
-  );
-  const others = choices.filter(
-    (adapter) => !getAdapterDisplay(adapter.type).recommended,
-  );
+  // Self-hosted lists every installed adapter, so lead with the ones the
+  // display registry marks `recommended` (the set onboarding offers under
+  // "Model source") and keep the rest one click away. Cloud already offers a
+  // short curated list, and a runner someone explicitly enabled stays in view.
+  const nativeRunnerEnabled = experimental.data?.enableNativeRunner === true;
+  const isFeatured = (type: string) =>
+    cloud ||
+    getAdapterDisplay(type).recommended === true ||
+    (type === "paperclip_runner" && nativeRunnerEnabled);
+  const recommended = choices.filter((adapter) => isFeatured(adapter.type));
+  const others = choices.filter((adapter) => !isFeatured(adapter.type));
   const [showAllAdapters, setShowAllAdapters] = useState(false);
   // Never hide the current selection (e.g. an adapter preselected via a link),
   // and show everything when nothing is marked recommended.
@@ -163,18 +168,18 @@ export function AgentBasicsDialog({
       >
         <div
           className="flex items-center gap-2 px-6 py-5 text-xs text-muted-foreground"
-          aria-label="New agent progress"
+          aria-label={t("newAgent.basics.progressLabel")}
         >
           <span
             className={cn(step === "name" && "font-medium text-foreground")}
           >
-            1. Name
+            {t("newAgent.basics.stepName")}
           </span>
           <ChevronRight className="size-3" />
           <span
             className={cn(step === "adapter" && "font-medium text-foreground")}
           >
-            2. Adapter
+            {t("newAgent.basics.stepAdapter")}
           </span>
         </div>
         <form
@@ -193,26 +198,26 @@ export function AgentBasicsDialog({
               <div className="space-y-2">
                 <DialogTitle className="text-3xl font-semibold tracking-tight">
                   {step === "name"
-                    ? "Meet your next agent"
-                    : "Choose an adapter"}
+                    ? t("newAgent.basics.nameTitle")
+                    : t("newAgent.basics.adapterTitle")}
                 </DialogTitle>
                 <DialogDescription className="text-base">
                   {step === "name"
-                    ? "Start with a name. Make them your own."
-                    : `How should ${name.trim()} work?`}
+                    ? t("newAgent.basics.nameDescription")
+                    : t("newAgent.basics.adapterDescription", { name: name.trim() })}
                 </DialogDescription>
               </div>
             </div>
             {step === "name" ? (
               <div className="space-y-2">
                 <label htmlFor={id} className="text-sm font-medium">
-                  Agent name
+                  {t("newAgent.basics.agentName")}
                 </label>
                 <Input
                   id={id}
                   autoFocus
                   maxLength={100}
-                  placeholder="e.g. Darnold"
+                  placeholder={t("newAgent.basics.namePlaceholder")}
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   className="h-12 text-base"
@@ -224,16 +229,16 @@ export function AgentBasicsDialog({
                     className="px-0 text-muted-foreground"
                     onClick={onInvite}
                   >
-                    Invite an external agent
+                    {t("newAgent.basics.inviteExternal")}
                   </Button>
                 )}
               </div>
             ) : (
               <fieldset className="space-y-4">
-                <legend className="sr-only">Adapter</legend>
+                <legend className="sr-only">{t("newAgent.basics.adapterLegend")}</legend>
                 {isPending && (
                   <p role="status" className="text-sm text-muted-foreground">
-                    Loading adapters…
+                    {t("newAgent.basics.loadingAdapters")}
                   </p>
                 )}
                 {error && (
@@ -269,9 +274,11 @@ export function AgentBasicsDialog({
                           <span className="text-sm font-medium">
                             {display.label}
                           </span>
-                          <span className="text-xs text-muted-foreground">
-                            {display.description}
-                          </span>
+                          {!cloud && display.description ? (
+                            <span className="text-xs text-muted-foreground">
+                              {display.description}
+                            </span>
+                          ) : null}
                           {adapterType === adapter.type && (
                             <Check className="absolute right-2 top-2 size-3.5" />
                           )}
@@ -291,13 +298,13 @@ export function AgentBasicsDialog({
                       onClick={() => setShowAllAdapters((value) => !value)}
                     >
                       {expanded
-                        ? "Show recommended only"
-                        : `Show all adapters (${others.length} more)`}
+                        ? t("newAgent.basics.showRecommendedOnly")
+                        : t("newAgent.basics.showAllAdapters", { count: others.length })}
                     </Button>
                   )}
                 {validAdapter && adapterType === "paperclip_runner" && (
                   <label className="flex flex-col gap-2 text-sm font-medium">
-                    Runner
+                    {t("newAgent.basics.runner")}
                     <select
                       className="rounded-md border border-border bg-background px-3 py-2"
                       value={runnerProvider}
@@ -305,7 +312,7 @@ export function AgentBasicsDialog({
                         setRunnerProvider(event.target.value)
                       }
                     >
-                      <option value="codex">Codex (app server)</option>
+                      <option value="codex">{t("newAgent.basics.runnerCodex")}</option>
                       <option value="claude">Claude (ACPX)</option>
                       <option value="opencode">OpenCode</option>
                     </select>
@@ -321,11 +328,11 @@ export function AgentBasicsDialog({
               onClick={() => (step === "name" ? onClose() : setStep("name"))}
             >
               {step === "name" ? (
-                "Cancel"
+                t("newAgent.basics.cancel")
               ) : (
                 <>
                   <ArrowLeft className="size-4" />
-                  Back
+                  {t("newAgent.basics.back")}
                 </>
               )}
             </Button>
@@ -333,7 +340,7 @@ export function AgentBasicsDialog({
               type="submit"
               disabled={!name.trim() || (step === "adapter" && !validAdapter)}
             >
-              {step === "name" ? "Choose adapter" : "Configure agent"}
+              {step === "name" ? t("newAgent.basics.chooseAdapter") : t("newAgent.basics.configureAgent")}
               <ArrowRight className="size-4" />
             </Button>
           </div>
