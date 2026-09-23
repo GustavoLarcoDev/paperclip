@@ -1,0 +1,140 @@
+{
+  "dashboard": {
+    "page": {
+      "breadcrumb": "Dashboard",
+      "welcome": "Welcome to Paperclip. Set up your first organization and agent to get started.",
+      "getStarted": "Get Started",
+      "selectOrganization": "Create or select an organization to view the dashboard.",
+      "noAgents": "You have no agents.",
+      "createAgent": "Create one here",
+      "recentActivity": "Recent Activity",
+      "recentTasks": "Recent Tasks",
+      "noTasks": "No tasks yet. Create one to give your agents work.",
+      "newTask": "New Task"
+    },
+    "pausedBanner": {
+      "importedTitle_one": "{{count}} imported agent is paused and will not run.",
+      "importedTitle_other": "{{count}} imported agents are paused and will not run.",
+      "resuming": "Resuming…",
+      "resumeAll": "Resume all",
+      "importedBody": "Agents from an organization import arrive paused as a safety default. Resume them so assigned tasks can start.",
+      "allPausedTitle": "All agents in this organization are paused — nothing will run.",
+      "reviewAgents": "Review agents",
+      "allPausedBody": "Resume at least one agent to let assigned tasks start."
+    },
+    "budgetIncidents": {
+      "title_one": "{{count}} active budget incident",
+      "title_other": "{{count}} active budget incidents",
+      "summary": "{{agents}} agents paused · {{projects}} projects paused · {{approvals}} pending budget approvals",
+      "openBudgets": "Open budgets"
+    },
+    "metrics": {
+      "agentsEnabled": "Agents Enabled",
+      "agentsDescription": "{{running}} running, {{paused}} paused, {{errors}} errors",
+      "tasksInProgress": "Tasks In Progress",
+      "tasksDescription": "{{open}} open, {{blocked}} blocked",
+      "monthSpend": "Month Spend",
+      "budgetUtilization": "{{percent}}% of {{budget}} budget",
+      "unlimitedBudget": "Unlimited budget",
+      "pendingApprovals": "Pending Approvals",
+      "budgetOverridesAwaiting": "{{overrides}} budget overrides awaiting board review",
+      "awaitingBoardReview": "Awaiting board review"
+    },
+    "charts": {
+      "last14Days": "Last 14 days",
+      "runActivity": "Run Activity",
+      "tasksByPriority": "Tasks by Priority",
+      "tasksByStatus": "Tasks by Status",
+      "successRate": "Success Rate",
+      "noRunsYet": "No runs yet",
+      "noTasks": "No tasks",
+      "dayTasksTooltip": "{{day}}: {{total}} issues",
+      "runDayTooltip": {
+        "total_one": "{{date}}: {{count}} run",
+        "total_other": "{{date}}: {{count}} runs",
+        "succeeded": "succeeded: {{count}}",
+        "recovered": "recovered: {{count}} (retry succeeded)",
+        "failed": "failed: {{count}}",
+        "other": "other: {{count}}"
+      },
+      "runLegend": {
+        "succeeded": "Succeeded",
+        "recovered": "Recovered",
+        "failed": "Failed",
+        "other": "Other"
+      },
+      "priority": {
+        "critical": "Critical",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "status": {
+        "todo": "To Do",
+        "in_progress": "In Progress",
+        "in_review": "In Review",
+        "done": "Done",
+        "blocked": "Blocked",
+        "cancelled": "Cancelled",
+        "backlog": "Backlog"
+      }
+    },
+    "activeAgents": {
+      "title": "Agents",
+      "empty": "No recent agent runs.",
+      "moreRuns_one": "{{count}} more active/recent run",
+      "moreRuns_other": "{{count}} more active/recent runs",
+      "viewAllRuns": "View all runs",
+      "runStatus": {
+        "running": "Running",
+        "queued": "Queued",
+        "succeeded": "Succeeded",
+        "failed": "Failed",
+        "timed_out": "Timed out",
+        "cancelled": "Cancelled",
+        "interrupted": "Interrupted"
+      },
+      "finished": "Finished {{time}}",
+      "started": "Started {{time}}",
+      "queuedAt": "Queued {{time}}",
+      "taskUnavailable": "Task unavailable",
+      "loadingTask": "Loading task…",
+      "viewRunAriaLabel": "{{agent}} — {{status}}. View run",
+      "taskStatus": {
+        "generic": "Task {{status}}",
+        "backlog": "Task backlog",
+        "todo": "Task todo",
+        "in_progress": "Task in progress",
+        "in_review": "Task in review",
+        "done": "Task done",
+        "blocked": "Task blocked",
+        "cancelled": "Task cancelled",
+        "idle": "Task idle"
+      },
+      "scheduledHeartbeat": "Scheduled heartbeat",
+      "noLinkedTask": "No linked task"
+    },
+    "live": {
+      "breadcrumb": "Live runs",
+      "createOrganization": "Create an organization to view live runs.",
+      "selectOrganization": "Select an organization to view live runs.",
+      "backToDashboard": "Dashboard",
+      "title": "Live agent runs",
+      "description": "Active runs first, followed by the most recent completed runs.",
+      "showingUpTo": "Showing up to {{limit}}",
+      "panelTitle": "Active / recent",
+      "empty": "No active or recent agent runs."
+    },
+    "smokeLab": {
+      "title": "Integration smoke",
+      "health": {
+        "green": "All paths passing",
+        "amber": "Needs a run",
+        "red": "Failing paths",
+        "unknown": "No runs yet"
+      },
+      "lastRun": "Last run {{time}}",
+      "runFromTab": "Run one from the Smoke Lab tab"
+    }
+  }
+}

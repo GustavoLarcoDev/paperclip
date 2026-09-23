@@ -1,0 +1,140 @@
+{
+  "dashboard": {
+    "page": {
+      "breadcrumb": "Panel",
+      "welcome": "Te damos la bienvenida a Paperclip. Configura tu primera organización y tu primer agente para empezar.",
+      "getStarted": "Empezar",
+      "selectOrganization": "Crea o selecciona una organización para ver el panel.",
+      "noAgents": "No tienes agentes.",
+      "createAgent": "Crea uno aquí",
+      "recentActivity": "Actividad reciente",
+      "recentTasks": "Tareas recientes",
+      "noTasks": "Aún no hay tareas. Crea una para darles trabajo a tus agentes.",
+      "newTask": "Nueva tarea"
+    },
+    "pausedBanner": {
+      "importedTitle_one": "{{count}} agente importado está en pausa y no se ejecutará.",
+      "importedTitle_other": "{{count}} agentes importados están en pausa y no se ejecutarán.",
+      "resuming": "Reanudando…",
+      "resumeAll": "Reanudar todos",
+      "importedBody": "Los agentes de una importación de organización llegan en pausa como medida de seguridad. Reanúdalos para que las tareas asignadas puedan empezar.",
+      "allPausedTitle": "Todos los agentes de esta organización están en pausa: no se ejecutará nada.",
+      "reviewAgents": "Revisar agentes",
+      "allPausedBody": "Reanuda al menos un agente para que las tareas asignadas puedan empezar."
+    },
+    "budgetIncidents": {
+      "title_one": "{{count}} incidente de presupuesto activo",
+      "title_other": "{{count}} incidentes de presupuesto activos",
+      "summary": "{{agents}} agentes en pausa · {{projects}} proyectos en pausa · {{approvals}} aprobaciones de presupuesto pendientes",
+      "openBudgets": "Abrir presupuestos"
+    },
+    "metrics": {
+      "agentsEnabled": "Agentes habilitados",
+      "agentsDescription": "{{running}} en ejecución, {{paused}} en pausa, {{errors}} con errores",
+      "tasksInProgress": "Tareas en curso",
+      "tasksDescription": "{{open}} abiertas, {{blocked}} bloqueadas",
+      "monthSpend": "Gasto del mes",
+      "budgetUtilization": "{{percent}}% de un presupuesto de {{budget}}",
+      "unlimitedBudget": "Presupuesto ilimitado",
+      "pendingApprovals": "Aprobaciones pendientes",
+      "budgetOverridesAwaiting": "{{overrides}} excepciones de presupuesto esperan revisión del directorio",
+      "awaitingBoardReview": "Esperan revisión del directorio"
+    },
+    "charts": {
+      "last14Days": "Últimos 14 días",
+      "runActivity": "Actividad de ejecuciones",
+      "tasksByPriority": "Tareas por prioridad",
+      "tasksByStatus": "Tareas por estado",
+      "successRate": "Tasa de éxito",
+      "noRunsYet": "Aún no hay ejecuciones",
+      "noTasks": "Sin tareas",
+      "dayTasksTooltip": "{{day}}: {{total}} tareas",
+      "runDayTooltip": {
+        "total_one": "{{date}}: {{count}} ejecución",
+        "total_other": "{{date}}: {{count}} ejecuciones",
+        "succeeded": "exitosas: {{count}}",
+        "recovered": "recuperadas: {{count}} (el reintento funcionó)",
+        "failed": "fallidas: {{count}}",
+        "other": "otras: {{count}}"
+      },
+      "runLegend": {
+        "succeeded": "Exitosas",
+        "recovered": "Recuperadas",
+        "failed": "Fallidas",
+        "other": "Otras"
+      },
+      "priority": {
+        "critical": "Crítica",
+        "high": "Alta",
+        "medium": "Media",
+        "low": "Baja"
+      },
+      "status": {
+        "todo": "Por hacer",
+        "in_progress": "En curso",
+        "in_review": "En revisión",
+        "done": "Hecha",
+        "blocked": "Bloqueada",
+        "cancelled": "Cancelada",
+        "backlog": "Pendientes"
+      }
+    },
+    "activeAgents": {
+      "title": "Agentes",
+      "empty": "No hay ejecuciones recientes de agentes.",
+      "moreRuns_one": "{{count}} ejecución activa o reciente más",
+      "moreRuns_other": "{{count}} ejecuciones activas o recientes más",
+      "viewAllRuns": "Ver todas las ejecuciones",
+      "runStatus": {
+        "running": "En ejecución",
+        "queued": "En cola",
+        "succeeded": "Exitosa",
+        "failed": "Fallida",
+        "timed_out": "Tiempo agotado",
+        "cancelled": "Cancelada",
+        "interrupted": "Interrumpida"
+      },
+      "finished": "Terminó {{time}}",
+      "started": "Empezó {{time}}",
+      "queuedAt": "En cola {{time}}",
+      "taskUnavailable": "Tarea no disponible",
+      "loadingTask": "Cargando tarea…",
+      "viewRunAriaLabel": "{{agent}} — {{status}}. Ver ejecución",
+      "taskStatus": {
+        "generic": "Tarea: {{status}}",
+        "backlog": "Tarea pendiente",
+        "todo": "Tarea por hacer",
+        "in_progress": "Tarea en curso",
+        "in_review": "Tarea en revisión",
+        "done": "Tarea hecha",
+        "blocked": "Tarea bloqueada",
+        "cancelled": "Tarea cancelada",
+        "idle": "Tarea inactiva"
+      },
+      "scheduledHeartbeat": "Revisión periódica programada",
+      "noLinkedTask": "Sin tarea vinculada"
+    },
+    "live": {
+      "breadcrumb": "Ejecuciones en vivo",
+      "createOrganization": "Crea una organización para ver las ejecuciones en vivo.",
+      "selectOrganization": "Selecciona una organización para ver las ejecuciones en vivo.",
+      "backToDashboard": "Panel",
+      "title": "Ejecuciones de agentes en vivo",
+      "description": "Primero las ejecuciones activas y luego las completadas más recientes.",
+      "showingUpTo": "Mostrando hasta {{limit}}",
+      "panelTitle": "Activas / recientes",
+      "empty": "No hay ejecuciones de agentes activas ni recientes."
+    },
+    "smokeLab": {
+      "title": "Prueba de humo de integración",
+      "health": {
+        "green": "Todas las rutas pasan",
+        "amber": "Necesita una ejecución",
+        "red": "Rutas con fallos",
+        "unknown": "Aún no hay ejecuciones"
+      },
+      "lastRun": "Última ejecución: {{time}}",
+      "runFromTab": "Ejecuta una desde la pestaña Smoke Lab"
+    }
+  }
+}
