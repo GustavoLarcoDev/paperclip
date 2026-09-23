@@ -1,0 +1,129 @@
+{
+  "inbox": {
+    "breadcrumb": "Inbox",
+    "row": {
+      "markAsRead": "Mark as read",
+      "dismiss": "Dismiss",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "failedRun": {
+      "title": "Failed run",
+      "titleWithAgent": "Failed run — {{agent}}",
+      "fallbackMessage": "Run exited with an error.",
+      "retry": "Retry",
+      "retrying": "Retrying…"
+    },
+    "approval": {
+      "requestedBy": "requested by {{name}}",
+      "updated": "updated {{time}}",
+      "status": {
+        "pending": "pending",
+        "revision_requested": "revision requested",
+        "approved": "approved",
+        "rejected": "rejected",
+        "cancelled": "cancelled"
+      }
+    },
+    "joinRequest": {
+      "agentLabel": "Agent join request",
+      "agentLabelWithName": "Agent join request: {{name}}",
+      "humanLabel": "Human join request",
+      "requested": "requested {{time}} from IP {{ip}}",
+      "adapter": "adapter: {{adapter}}"
+    },
+    "creators": {
+      "board": "Board",
+      "me": "Me"
+    },
+    "errors": {
+      "approve": "Failed to approve",
+      "reject": "Failed to reject",
+      "approveJoin": "Failed to approve join request",
+      "rejectJoin": "Failed to reject join request",
+      "archiveTask": "Failed to archive task",
+      "undoArchive": "Failed to undo inbox archive",
+      "retryTitle": "Run retry failed",
+      "retryBody": "Unable to retry run"
+    },
+    "empty": {
+      "selectOrganization": "Select an organization to view inbox.",
+      "noSearchMatches": "No inbox items match your search.",
+      "inboxZero": "Inbox zero.",
+      "noUnread": "No new inbox items.",
+      "noRecent": "No recent inbox items.",
+      "noFilterMatches": "No inbox items match these filters."
+    },
+    "toolbar": {
+      "ariaLabel": "Inbox controls",
+      "tabs": {
+        "mine": "Mine",
+        "recent": "Recent",
+        "unread": "Unread",
+        "blocked": "Blocked",
+        "all": "All"
+      },
+      "searchPlaceholder": "Search inbox…",
+      "group": "Group",
+      "sort": "Sort",
+      "columnsTitle": "Choose which inbox columns stay visible",
+      "enableNesting": "Enable parent-child nesting",
+      "disableNesting": "Disable parent-child nesting",
+      "groupOptions": {
+        "none": "None",
+        "type": "Type",
+        "assignee": "Responsible",
+        "project": "Project",
+        "workspace": "Workspace"
+      },
+      "blockedGroupOptions": {
+        "blocker_type": "Blocker type",
+        "none": "None"
+      },
+      "blockedSortOptions": {
+        "urgency": "Most urgent",
+        "most_recent": "Most recent",
+        "longest_stopped": "Longest stopped"
+      },
+      "marking": "Marking…",
+      "markAllRead": "Mark all as read",
+      "filterFeedback": {
+        "liveOnly": "Live runs only — tasks currently connected to an agent run.",
+        "activeStatuses": "Active statuses — open tasks, whether or not an agent is running."
+      }
+    },
+    "markAllReadDialog": {
+      "title": "Mark all as read?",
+      "description_one": "This will mark {{count}} unread item as read.",
+      "description_other": "This will mark {{count}} unread items as read.",
+      "cancel": "Cancel",
+      "confirm": "Mark all as read"
+    },
+    "list": {
+      "collapseSubtasks": "Collapse sub-tasks",
+      "expandSubtasks": "Expand sub-tasks",
+      "subtaskCount_one": "({{count}} sub-task)",
+      "subtaskCount_other": "({{count}} sub-tasks)",
+      "archived": "Archived",
+      "otherResults": "Other results",
+      "newTaskInGroup": "New task in {{group}}",
+      "earlier": "Earlier"
+    },
+    "alerts": {
+      "title": "Alerts",
+      "agentErrors_one": "agent has errors",
+      "agentErrors_other": "agents have errors",
+      "budgetPrefix": "Budget at",
+      "budgetSuffix": "utilization this month"
+    },
+    "blocked": {
+      "loadError": "Couldn't load the Blocked tab.",
+      "otherTabsWork": "Other Inbox tabs still work. {{message}}",
+      "trying": "Trying…",
+      "tryAgain": "Try again",
+      "emptyTitle": "No work is stopped.",
+      "emptyDescription": "Tasks that need a decision, recovery, or external action will appear here.",
+      "noSearchResults": "No stopped items match your search."
+    }
+  }
+}

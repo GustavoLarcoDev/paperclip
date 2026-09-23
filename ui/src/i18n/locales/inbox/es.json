@@ -1,0 +1,129 @@
+{
+  "inbox": {
+    "breadcrumb": "Bandeja de entrada",
+    "row": {
+      "markAsRead": "Marcar como leído",
+      "dismiss": "Descartar",
+      "approve": "Aprobar",
+      "reject": "Rechazar"
+    },
+    "failedRun": {
+      "title": "Ejecución fallida",
+      "titleWithAgent": "Ejecución fallida — {{agent}}",
+      "fallbackMessage": "La ejecución terminó con un error.",
+      "retry": "Reintentar",
+      "retrying": "Reintentando…"
+    },
+    "approval": {
+      "requestedBy": "solicitada por {{name}}",
+      "updated": "actualizada {{time}}",
+      "status": {
+        "pending": "pendiente",
+        "revision_requested": "cambios solicitados",
+        "approved": "aprobada",
+        "rejected": "rechazada",
+        "cancelled": "cancelada"
+      }
+    },
+    "joinRequest": {
+      "agentLabel": "Solicitud de ingreso de agente",
+      "agentLabelWithName": "Solicitud de ingreso de agente: {{name}}",
+      "humanLabel": "Solicitud de ingreso de persona",
+      "requested": "solicitada {{time}} desde la IP {{ip}}",
+      "adapter": "proveedor: {{adapter}}"
+    },
+    "creators": {
+      "board": "Directorio",
+      "me": "Yo"
+    },
+    "errors": {
+      "approve": "No se pudo aprobar",
+      "reject": "No se pudo rechazar",
+      "approveJoin": "No se pudo aprobar la solicitud de ingreso",
+      "rejectJoin": "No se pudo rechazar la solicitud de ingreso",
+      "archiveTask": "No se pudo archivar la tarea",
+      "undoArchive": "No se pudo deshacer el archivado en la bandeja de entrada",
+      "retryTitle": "No se pudo reintentar la ejecución",
+      "retryBody": "No se puede reintentar la ejecución"
+    },
+    "empty": {
+      "selectOrganization": "Selecciona una organización para ver la bandeja de entrada.",
+      "noSearchMatches": "Ningún elemento de la bandeja de entrada coincide con tu búsqueda.",
+      "inboxZero": "Bandeja de entrada al día.",
+      "noUnread": "No hay elementos nuevos en la bandeja de entrada.",
+      "noRecent": "No hay elementos recientes en la bandeja de entrada.",
+      "noFilterMatches": "Ningún elemento de la bandeja de entrada coincide con estos filtros."
+    },
+    "toolbar": {
+      "ariaLabel": "Controles de la bandeja de entrada",
+      "tabs": {
+        "mine": "Mías",
+        "recent": "Recientes",
+        "unread": "No leídas",
+        "blocked": "Bloqueadas",
+        "all": "Todo"
+      },
+      "searchPlaceholder": "Buscar en la bandeja de entrada…",
+      "group": "Agrupar",
+      "sort": "Ordenar",
+      "columnsTitle": "Elige qué columnas de la bandeja de entrada se muestran",
+      "enableNesting": "Activar anidado de tareas y subtareas",
+      "disableNesting": "Desactivar anidado de tareas y subtareas",
+      "groupOptions": {
+        "none": "Ninguno",
+        "type": "Tipo",
+        "assignee": "Responsable",
+        "project": "Proyecto",
+        "workspace": "Espacio de trabajo"
+      },
+      "blockedGroupOptions": {
+        "blocker_type": "Tipo de bloqueo",
+        "none": "Ninguno"
+      },
+      "blockedSortOptions": {
+        "urgency": "Más urgentes",
+        "most_recent": "Más recientes",
+        "longest_stopped": "Detenidas hace más tiempo"
+      },
+      "marking": "Marcando…",
+      "markAllRead": "Marcar todo como leído",
+      "filterFeedback": {
+        "liveOnly": "Solo ejecuciones en vivo: tareas conectadas ahora a una ejecución de agente.",
+        "activeStatuses": "Estados activos: tareas abiertas, haya o no un agente en ejecución."
+      }
+    },
+    "markAllReadDialog": {
+      "title": "¿Marcar todo como leído?",
+      "description_one": "Se marcará {{count}} elemento no leído como leído.",
+      "description_other": "Se marcarán {{count}} elementos no leídos como leídos.",
+      "cancel": "Cancelar",
+      "confirm": "Marcar todo como leído"
+    },
+    "list": {
+      "collapseSubtasks": "Contraer subtareas",
+      "expandSubtasks": "Expandir subtareas",
+      "subtaskCount_one": "({{count}} subtarea)",
+      "subtaskCount_other": "({{count}} subtareas)",
+      "archived": "Archivadas",
+      "otherResults": "Otros resultados",
+      "newTaskInGroup": "Nueva tarea en {{group}}",
+      "earlier": "Anteriores"
+    },
+    "alerts": {
+      "title": "Alertas",
+      "agentErrors_one": "agente tiene errores",
+      "agentErrors_other": "agentes tienen errores",
+      "budgetPrefix": "Presupuesto al",
+      "budgetSuffix": "de uso este mes"
+    },
+    "blocked": {
+      "loadError": "No se pudo cargar la pestaña Bloqueadas.",
+      "otherTabsWork": "Las demás pestañas de la bandeja de entrada siguen funcionando. {{message}}",
+      "trying": "Reintentando…",
+      "tryAgain": "Reintentar",
+      "emptyTitle": "No hay trabajo detenido.",
+      "emptyDescription": "Aquí aparecerán las tareas que necesiten una decisión, una recuperación o una acción externa.",
+      "noSearchResults": "Ningún elemento detenido coincide con tu búsqueda."
+    }
+  }
+}
