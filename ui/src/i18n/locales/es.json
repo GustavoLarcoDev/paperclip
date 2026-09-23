@@ -5,5 +5,12 @@
       "description": "Comienza creando una empresa.",
       "newCompany": "Nueva empresa"
     }
+  },
+  "profile": {
+    "language": {
+      "label": "Idioma",
+      "automatic": "Automático (idioma del navegador)",
+      "hint": "Se aplica a este navegador. Lo que aún no está traducido se muestra en inglés."
+    }
   }
 }

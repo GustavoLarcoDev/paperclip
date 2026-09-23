@@ -13,6 +13,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LanguageSelect } from "@/components/LanguageSelect";
 
 function deriveInitials(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -269,6 +270,10 @@ export function ProfileSettings() {
             </Button>
           </div>
         </form>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <LanguageSelect />
+        </div>
 
         <InboxAgentPolicyControl companyId={selectedCompanyId} />
       </section>

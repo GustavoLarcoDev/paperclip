@@ -90,12 +90,11 @@ function validateNode(path: string[], candidate: unknown, englishReference: unkn
 
   const englishKeys = Object.keys(englishReference).sort();
   const candidateKeys = Object.keys(candidate).sort();
-  const missingKeys = englishKeys.filter((key) => !candidateKeys.includes(key));
+  // A key missing from a translation falls back to English at runtime
+  // (fallbackLng), so partial locales are valid. Keys English does not define
+  // are still rejected: they are typos or stale strings nothing can render.
   const extraKeys = candidateKeys.filter((key) => !englishKeys.includes(key));
 
-  for (const key of missingKeys) {
-    errors.push(`${formatPath([...path, key])} is missing`);
-  }
   for (const key of extraKeys) {
     errors.push(`${formatPath([...path, key])} is not defined in English`);
   }

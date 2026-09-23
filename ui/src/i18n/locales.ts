@@ -39,3 +39,26 @@ export const i18nextResources: Resource = Object.fromEntries(
 ) as Resource;
 
 export type SupportedLocale = keyof typeof localeMessages;
+
+function countLeaves(messages: unknown, reference: unknown): { translated: number; total: number } {
+  if (typeof reference === "string") {
+    return { translated: typeof messages === "string" ? 1 : 0, total: 1 };
+  }
+  if (!reference || typeof reference !== "object") return { translated: 0, total: 0 };
+  let translated = 0;
+  let total = 0;
+  for (const [key, value] of Object.entries(reference as Record<string, unknown>)) {
+    const child = messages && typeof messages === "object" ? (messages as Record<string, unknown>)[key] : undefined;
+    const counts = countLeaves(child, value);
+    translated += counts.translated;
+    total += counts.total;
+  }
+  return { translated, total };
+}
+
+/** Share of the English strings a locale translates (0..1); missing keys fall back to English. */
+export function localeCoverage(locale: string): number {
+  if (locale === DEFAULT_LOCALE) return 1;
+  const { translated, total } = countLeaves(localeMessages[locale], localeMessages[DEFAULT_LOCALE]);
+  return total === 0 ? 0 : translated / total;
+}

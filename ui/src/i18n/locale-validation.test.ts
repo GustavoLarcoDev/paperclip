@@ -18,7 +18,7 @@ describe("locale validation", () => {
     }
   });
 
-  it("rejects missing and extra nested keys", () => {
+  it("rejects extra nested keys and allows missing ones to fall back to English", () => {
     expect(
       validateLocaleMessages({
         app: {
@@ -29,12 +29,7 @@ describe("locale validation", () => {
           },
         },
       }),
-    ).toEqual(
-      expect.arrayContaining([
-        "app.noCompanies.newCompany is missing",
-        "app.noCompanies.unexpected is not defined in English",
-      ]),
-    );
+    ).toEqual(["app.noCompanies.unexpected is not defined in English"]);
   });
 
   it("rejects non-string leaves", () => {

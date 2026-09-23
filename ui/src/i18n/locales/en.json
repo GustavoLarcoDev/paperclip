@@ -5,5 +5,12 @@
       "description": "Get started by creating an organization.",
       "newCompany": "New Organization"
     }
+  },
+  "profile": {
+    "language": {
+      "label": "Language",
+      "automatic": "Automatic (browser language)",
+      "hint": "Applies to this browser. Text that is not translated yet stays in English."
+    }
   }
 }
