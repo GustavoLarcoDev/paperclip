@@ -137,6 +137,7 @@ export function Layout({ sidebarSections }: { sidebarSections?: ReactNode }) {
   const activeScrollKey = useRef<string>(location.key);
   const [mobileNavVisible, setMobileNavVisible] = useState(true);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const showShortcuts = useCallback(() => setShortcutsOpen(true), []);
   const matchedCompany = useMemo(() => {
     if (!companyPrefix) return null;
     const requestedPrefix = companyPrefix.toUpperCase();
@@ -455,7 +456,7 @@ export function Layout({ sidebarSections }: { sidebarSections?: ReactNode }) {
     onSearch: openSearch,
     onToggleSidebar: toggleSidebar,
     onTogglePanel: togglePanel,
-    onShowShortcuts: () => setShortcutsOpen(true),
+    onShowShortcuts: showShortcuts,
     onGoToInbox: () => navigate("/inbox"),
   });
 
@@ -662,6 +663,7 @@ export function Layout({ sidebarSections }: { sidebarSections?: ReactNode }) {
             <SidebarAccountMenu
               deploymentMode={health?.deploymentMode}
               forceExpanded={replacesPrimarySidebar}
+              onShowShortcuts={showShortcuts}
             />
           </div>
         ) : (
@@ -685,6 +687,7 @@ export function Layout({ sidebarSections }: { sidebarSections?: ReactNode }) {
             <SidebarAccountMenu
               deploymentMode={health?.deploymentMode}
               forceExpanded={replacesPrimarySidebar}
+              onShowShortcuts={showShortcuts}
             />
           </SidebarShell>
         )}

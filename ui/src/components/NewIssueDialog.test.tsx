@@ -434,7 +434,9 @@ describe("NewIssueDialog", () => {
       expect(control?.className).toContain("h-8");
       expect(control?.className).toContain("px-2.5");
     }
-    expect(more?.className).toContain("size-8");
+    // The overflow menu only holds the mobile priority picker, which is hidden
+    // (PAP-411), so the trigger is not rendered at all.
+    expect(more).toBeNull();
 
     act(() => root.unmount());
   });
@@ -1291,6 +1293,10 @@ describe("NewIssueDialog", () => {
 
     const highPriorityOption = container.querySelector('[data-testid="new-issue-more-priority-high"]');
     expect(highPriorityOption).toBeNull();
+
+    // Issues have no start/due date fields; the overflow menu must not offer inert date items.
+    expect(container.textContent).not.toContain("Start date");
+    expect(container.textContent).not.toContain("Due date");
 
     act(() => root.unmount());
   });

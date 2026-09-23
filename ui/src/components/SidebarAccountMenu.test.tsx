@@ -351,4 +351,44 @@ describe("SidebarAccountMenu", () => {
     });
   });
 
+  it("opens the keyboard shortcuts cheatsheet from the account menu", async () => {
+    const root = createRoot(container);
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    const onShowShortcuts = vi.fn();
+    const onOpenChange = vi.fn();
+
+    await act(async () => {
+      root.render(
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <SidebarAccountMenu
+              deploymentMode="local_trusted"
+              open
+              onOpenChange={onOpenChange}
+              onShowShortcuts={onShowShortcuts}
+            />
+          </TooltipProvider>
+        </QueryClientProvider>,
+      );
+    });
+    await flushReact();
+
+    const item = [...document.body.querySelectorAll('[data-slot="popover-content"] button')]
+      .find((button) => button.textContent?.trim() === "Keyboard shortcuts");
+    expect(item).toBeDefined();
+
+    await act(async () => {
+      item?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    expect(onShowShortcuts).toHaveBeenCalledTimes(1);
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+
+    await act(async () => {
+      root.unmount();
+    });
+  });
+
 });

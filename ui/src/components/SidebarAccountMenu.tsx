@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   BookOpen,
   Flag,
+  Keyboard,
   LogOut,
   Settings,
   type LucideIcon,
@@ -33,6 +34,8 @@ interface SidebarAccountMenuProps {
   onOpenChange?: (open: boolean) => void;
   /** Contextual navigation occupies a full sidebar even if the saved global nav mode is collapsed. */
   forceExpanded?: boolean;
+  /** Opens the keyboard shortcuts cheatsheet (the same one "?" opens). */
+  onShowShortcuts?: () => void;
 }
 
 interface MenuActionProps {
@@ -112,6 +115,7 @@ export function SidebarAccountMenu({
   open: controlledOpen,
   onOpenChange,
   forceExpanded = false,
+  onShowShortcuts,
 }: SidebarAccountMenuProps) {
   const isCloud = Boolean(useCloudInstance());
   const [internalOpen, setInternalOpen] = useState(false);
@@ -209,6 +213,16 @@ export function SidebarAccountMenu({
                 external
                 onClick={() => setOpen(false)}
               />
+              {onShowShortcuts ? (
+                <MenuAction
+                  label="Keyboard shortcuts"
+                  icon={Keyboard}
+                  onClick={() => {
+                    closeNavigationChrome();
+                    onShowShortcuts();
+                  }}
+                />
+              ) : null}
               <ThemeToggle variant="compact-menu-action" onAfterToggle={() => setOpen(false)} />
               {deploymentMode === "authenticated" ? (
                 <button

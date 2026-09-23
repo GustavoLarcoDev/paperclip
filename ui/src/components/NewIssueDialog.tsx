@@ -58,7 +58,6 @@ import {
   ArrowDown,
   AlertTriangle,
   Tag,
-  Calendar,
   Paperclip,
   FileText,
   Flag,
@@ -2221,22 +2220,25 @@ export function NewIssueDialog() {
             </PopoverContent>
           </Popover>
 
-          {/* More */}
+          {/* More: holds only the mobile priority picker. Issues have no start/due
+              date fields, so the former placeholder date items were removed; the
+              menu renders only when it has something to show. */}
+          {SHOW_TASK_PRIORITY_UI && (
           <Popover open={moreOpen} onOpenChange={setMoreOpen}>
             <PopoverTrigger asChild>
               <button
                 type="button"
                 data-testid="new-issue-more-menu-trigger"
                 data-slot="new-issue-compact-control"
-                className="inline-flex size-8 items-center justify-center rounded-md border border-border p-0 text-xs text-muted-foreground transition-colors hover:bg-accent/50 sm:size-auto sm:p-1"
+                aria-label="More options"
+                className="inline-flex size-8 items-center justify-center rounded-md border border-border p-0 text-xs text-muted-foreground transition-colors hover:bg-accent/50 sm:hidden"
               >
                 <MoreHorizontal className="h-3 w-3" />
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-44 p-1" align="start" data-testid="new-issue-more-menu">
               {/* PAP-411: mobile priority section hidden behind SHOW_TASK_PRIORITY_UI. */}
-              {SHOW_TASK_PRIORITY_UI && (
-              <div className="sm:hidden">
+              <div>
                 <div className="px-2 py-1 text-(length:--text-nano) font-medium uppercase text-muted-foreground">
                   Priority
                 </div>
@@ -2258,19 +2260,10 @@ export function NewIssueDialog() {
                     {p.label}
                   </button>
                 ))}
-                <div className="my-1 border-t border-border" />
               </div>
-              )}
-              <button className="flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50 text-muted-foreground">
-                <Calendar className="h-3 w-3" />
-                Start date
-              </button>
-              <button className="flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50 text-muted-foreground">
-                <Calendar className="h-3 w-3" />
-                Due date
-              </button>
             </PopoverContent>
           </Popover>
+          )}
         </div>
 
         {assigneeValue && status === "backlog" ? (

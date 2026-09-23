@@ -20,7 +20,10 @@ const mockInstanceSettingsApi = vi.hoisted(() => ({
   getExperimental: vi.fn(),
 }));
 
+const mockLocation = vi.hoisted(() => ({ pathname: "/PAP/dashboard" }));
+
 vi.mock("@/lib/router", () => ({
+  useLocation: () => mockLocation,
   NavLink: ({ to, children, className, ...props }: {
     to: string;
     children: ReactNode;
@@ -188,9 +191,12 @@ describe("Sidebar", () => {
     const root = await renderSidebar();
 
     expect(container.querySelector('a[aria-label="Open search"]')).toBeNull();
-    const navSearchLink = [...container.querySelectorAll("nav a")]
-      .find((anchor) => anchor.textContent?.trim() === "Search");
-    expect(navSearchLink?.getAttribute("href")).toBe("/search");
+    const navSearchLink = container.querySelector<HTMLAnchorElement>('nav a[href="/search"]');
+    expect(navSearchLink?.textContent).toContain("Search");
+    // The command palette shortcut is advertised on the row itself.
+    const hint = navSearchLink?.querySelector('[data-testid="sidebar-search-shortcut"]');
+    expect(hint?.textContent).toMatch(/^(⌘K|Ctrl K)$/);
+    expect(hint?.getAttribute("aria-hidden")).toBe("true");
 
     flushSync(() => {
       root.unmount();
@@ -242,9 +248,9 @@ describe("Sidebar", () => {
     expect(agentLinks).toHaveLength(1);
     expect([...container.querySelectorAll('a[href="/activity"]')]).toHaveLength(1);
     expect(navLabels).toContain("Audit");
-    expect(navLabels).not.toContain("Settings");
     expect(navLabels).not.toContain("Activity");
-    expect(navLabels).not.toContain("Costs");
+    expect(container.querySelector('nav a[href="/activity/costs"]')?.textContent?.trim()).toBe("Costs");
+    expect(container.querySelector('nav a[href="/company/settings"]')?.textContent?.trim()).toBe("Settings");
     expect(container.querySelector('[data-testid="sidebar-recent-tasks"]')).not.toBeNull();
 
     flushSync(() => {
@@ -405,7 +411,7 @@ describe("Sidebar", () => {
       .map((anchor) => anchor.textContent?.trim());
 
     expect(labels(workSection)).toEqual(["Tasks", "Projects", "Routines", "Artifacts"]);
-    expect(labels(orgSection)).toEqual(["Agents", "Skills", "Connectors", "Audit"]);
+    expect(labels(orgSection)).toEqual(["Agents", "Skills", "Connectors", "Audit", "Costs", "Settings"]);
     expect(sections.indexOf(workSection!)).toBeLessThan(sections.indexOf(orgSection!));
     expect(
       workSection?.querySelector('a[href="/issues"] svg')?.classList.contains("lucide-circle-check"),
