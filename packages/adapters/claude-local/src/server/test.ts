@@ -438,7 +438,9 @@ export async function testEnvironment(
         }
       } else if ((probe.exitCode ?? 1) === 0) {
         const summary = parsedStream.summary.trim();
-        const hasHello = /\bhello\b/i.test(summary);
+        // A user-level Claude `language` setting makes the CLI answer in that
+        // language ("¡Hola!"), so accept common translations of the greeting.
+        const hasHello = /(?<!\p{L})(hello|hola|olá|ola|bonjour|salut|hallo|ciao)(?!\p{L})/iu.test(summary);
         if (!hasHello) {
           // The unexpected summary is untrusted probe output. Log only the fixed
           // context and the allowlisted classification. Keep the check text
