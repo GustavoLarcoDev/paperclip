@@ -4,20 +4,42 @@ import { assertValidLocaleMessages } from "./locale-validation";
 
 export const DEFAULT_LOCALE = "en" as const;
 
-const localeModules = import.meta.glob("./locales/*.json", {
+// Each locale is `locales/<locale>.json` plus optional per-area files
+// `locales/<area>/<locale>.json`, so areas of the interface can be translated
+// independently. Files for the same locale are merged; an area file owns its
+// own top-level keys.
+const localeModules = import.meta.glob("./locales/**/*.json", {
   eager: true,
   import: "default",
 }) as Record<string, unknown>;
 
-export const localeMessages = Object.fromEntries(
-  Object.entries(localeModules).map(([path, messages]) => {
-    const locale = path.match(/\/([A-Za-z0-9_-]+)\.json$/)?.[1];
-    if (!locale) {
-      throw new Error(`Invalid locale file path: ${path}`);
+function isMessageObject(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function mergeMessages(target: Record<string, unknown>, source: unknown, path: string) {
+  if (!isMessageObject(source)) throw new Error(`Locale file ${path} must contain an object`);
+  for (const [key, value] of Object.entries(source)) {
+    const existing = target[key];
+    if (isMessageObject(existing) && isMessageObject(value)) {
+      mergeMessages(existing, value, path);
+    } else if (existing !== undefined) {
+      throw new Error(`Locale file ${path} redefines "${key}"`);
+    } else {
+      target[key] = isMessageObject(value) ? mergeMessages({}, value, path) : value;
     }
-    return [locale, messages];
-  }),
-);
+  }
+  return target;
+}
+
+export const localeMessages: Record<string, unknown> = {};
+for (const [path, messages] of Object.entries(localeModules).sort(([a], [b]) => a.localeCompare(b))) {
+  const locale = path.match(/\/([A-Za-z0-9_-]+)\.json$/)?.[1];
+  if (!locale) {
+    throw new Error(`Invalid locale file path: ${path}`);
+  }
+  localeMessages[locale] = mergeMessages((localeMessages[locale] as Record<string, unknown>) ?? {}, messages, path);
+}
 
 if (!(DEFAULT_LOCALE in localeMessages)) {
   throw new Error(`Missing default locale messages for ${DEFAULT_LOCALE}`);
@@ -25,7 +47,7 @@ if (!(DEFAULT_LOCALE in localeMessages)) {
 
 for (const [locale, messages] of Object.entries(localeMessages)) {
   try {
-    assertValidLocaleMessages(messages);
+    assertValidLocaleMessages(messages, localeMessages[DEFAULT_LOCALE]);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     throw new Error(`Invalid ${locale} locale messages: ${message}`);

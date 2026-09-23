@@ -14,7 +14,7 @@ describe("locale validation", () => {
   it("accepts registered locale files", () => {
     expect(Object.keys(localeMessages)).toContain("en");
     for (const [locale, messages] of Object.entries(localeMessages)) {
-      expect(validateLocaleMessages(messages), locale).toEqual([]);
+      expect(validateLocaleMessages(messages, localeMessages.en), locale).toEqual([]);
     }
   });
 
