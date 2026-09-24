@@ -1,6 +1,6 @@
 import express from "express";
 import request from "supertest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_OPENCODE_LOCAL_MODEL } from "@paperclipai/adapter-opencode-local";
 import { LOW_TRUST_REVIEW_PRESET } from "@paperclipai/shared";
 import { hoistModuleGraph } from "./helpers/hoist-module-graph.js";
@@ -1604,6 +1604,50 @@ describe.sequential("agent permission routes", () => {
       );
     });
   }
+
+  describe("instance defaults for new Claude agents", () => {
+    const envKeys = ["PAPERCLIP_CLAUDE_LOCAL_DEFAULT_MODEL", "PAPERCLIP_CLAUDE_LOCAL_DEFAULT_EFFORT"] as const;
+    const saved: Partial<Record<(typeof envKeys)[number], string | undefined>> = {};
+    beforeEach(() => {
+      for (const key of envKeys) saved[key] = process.env[key];
+      process.env.PAPERCLIP_CLAUDE_LOCAL_DEFAULT_MODEL = "claude-opus-5-5";
+      process.env.PAPERCLIP_CLAUDE_LOCAL_DEFAULT_EFFORT = "max";
+    });
+    afterEach(() => {
+      for (const key of envKeys) {
+        if (saved[key] === undefined) delete process.env[key];
+        else process.env[key] = saved[key];
+      }
+    });
+
+    async function createClaudeAgent(adapterConfig: Record<string, unknown>) {
+      mockAgentService.create.mockResolvedValue({ ...baseAgent, name: "Claude Builder", adapterType: "claude_local" });
+      const app = await createApp({
+        type: "board",
+        userId: "board-user",
+        source: "local_implicit",
+        isInstanceAdmin: true,
+        companyIds: [companyId],
+      });
+      const res = await requestApp(app, (baseUrl) => request(baseUrl)
+        .post(`/api/companies/${companyId}/agents`)
+        .send({ name: "Claude Builder", role: "engineer", adapterType: "claude_local", adapterConfig }));
+      expect(res.status, JSON.stringify(res.body)).toBe(201);
+      return mockAgentService.create.mock.calls.at(-1)?.[1]?.adapterConfig as Record<string, unknown>;
+    }
+
+    it("fills the model and effort a new agent leaves unset", async () => {
+      expect(await createClaudeAgent({})).toMatchObject({ model: "claude-opus-5-5", effort: "max" });
+    });
+
+    it("keeps explicit values and skips an effort the model does not support", async () => {
+      const explicit = await createClaudeAgent({ model: "claude-sonnet-5", effort: "low" });
+      expect(explicit).toMatchObject({ model: "claude-sonnet-5", effort: "low" });
+      const haiku = await createClaudeAgent({ model: "claude-haiku-4-5" });
+      expect(haiku.model).toBe("claude-haiku-4-5");
+      expect(haiku.effort).toBeUndefined();
+    });
+  });
 
   it("rejects updating an agent with an unsupported default environment driver", async () => {
     const environmentId = "33333333-3333-4333-8333-333333333333";

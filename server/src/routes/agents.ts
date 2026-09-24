@@ -155,6 +155,7 @@ import {
   isTruthyRuntimeEnvValue,
   resolveWorktreeRunExecutionActivationState,
 } from "../services/instance-settings.js";
+import { claudeLocalReasoningEffortsForModel, DEFAULT_CLAUDE_LOCAL_MODEL } from "@paperclipai/adapter-claude-local";
 import { runClaudeLogin } from "@paperclipai/adapter-claude-local/server";
 import { createInviteRateLimiter } from "../services/invite-rate-limit.js";
 import {
@@ -2642,7 +2643,26 @@ export function agentRoutes(
     if (adapterType === "cursor" && !asNonEmptyString(next.model)) {
       next.model = DEFAULT_CURSOR_LOCAL_MODEL;
     }
+    if (adapterType === "claude_local") applyClaudeLocalInstanceDefaults(next);
     return ensureGatewayDeviceKey(adapterType, next);
+  }
+
+  // Operator-chosen defaults for Claude agents that leave the model or effort
+  // unset, e.g. PAPERCLIP_CLAUDE_LOCAL_DEFAULT_MODEL=claude-opus-5-5 and
+  // PAPERCLIP_CLAUDE_LOCAL_DEFAULT_EFFORT=max. Unset variables keep the
+  // adapter's own defaults. The effort only applies when the model supports it.
+  function applyClaudeLocalInstanceDefaults(next: Record<string, unknown>) {
+    const defaultModel = asNonEmptyString(process.env.PAPERCLIP_CLAUDE_LOCAL_DEFAULT_MODEL);
+    if (defaultModel && !asNonEmptyString(next.model)) next.model = defaultModel;
+    const defaultEffort = asNonEmptyString(process.env.PAPERCLIP_CLAUDE_LOCAL_DEFAULT_EFFORT);
+    const model = asNonEmptyString(next.model) ?? DEFAULT_CLAUDE_LOCAL_MODEL;
+    if (
+      defaultEffort &&
+      !asNonEmptyString(next.effort) &&
+      claudeLocalReasoningEffortsForModel(model).includes(defaultEffort)
+    ) {
+      next.effort = defaultEffort;
+    }
   }
 
   async function assertAdapterConfigConstraints(
